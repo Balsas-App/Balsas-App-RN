@@ -1,6 +1,15 @@
 {
-  "extends": "expo/tsconfig.base",
-  "compilerOptions": {
-    "strict": true
-  }
+    "extends": "expo/tsconfig.base",
+    "compilerOptions": {
+        "strict": true,
+        "paths": {
+            "@assets/*": ["./src/assets/*"],
+            "@contexts/*": ["./src/contexts/*"],
+            "@components/*": ["./src/app/components/*"],
+            "@services/*": ["./src/services/*"],
+            "@type/*": ["./src/types/*"]
+        },
+        "typeRoots": ["./types", "./node_modules/@types"]
+    },
+    "include": ["src", "types"]
 }
