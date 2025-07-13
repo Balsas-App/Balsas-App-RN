@@ -9,6 +9,7 @@ import api, { clearTokens, getTokens, storeTokens } from "@services/api";
 import { JwtPayload, LoginResponse } from "@type/api";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
+import Toast, { ErrorToast } from "react-native-toast-message";
 
 type User = {
     id: number;
@@ -62,7 +63,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                     if (refreshToken) {
                         try {
                             const response = await api.post("/refresh-token", {
-                                refreshToken,
+                                refresh_token: refreshToken,
                             });
                             const { access_token, refresh_token } =
                                 response.data;
@@ -80,6 +81,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                             await clearTokens();
                             setUser(null);
                             setAuthenticated(false);
+
+                            Toast.show({
+                                type: "error",
+                                text1: "Sua sessão expirou.",
+                                position: "top",
+                                topOffset: 100,
+                            });
+
+                            console.log(err);
                         }
                     } else {
                         setAuthenticated(false);
@@ -170,6 +180,30 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             }}
         >
             {children}
+            <Toast
+                config={{
+                    error: (props: any) => (
+                        <ErrorToast
+                            {...props}
+                            style={{
+                                borderLeftColor: "red",
+                                backgroundColor: "#ffe6e6",
+                                width: "auto",
+                                marginHorizontal: 20,
+                            }}
+                            text1Style={{
+                                fontSize: 16,
+                                fontWeight: "bold",
+                                color: "#1a1a1a",
+                            }}
+                            text2Style={{
+                                fontSize: 14,
+                                color: "#333",
+                            }}
+                        />
+                    ),
+                }}
+            />
         </AuthContext.Provider>
     );
 };

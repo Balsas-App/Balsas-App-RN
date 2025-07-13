@@ -13,6 +13,7 @@ import { StyleSheet, Text } from "react-native";
 type AppContextType = {
     menuBottomSheet: React.RefObject<BottomSheetMethods | null>;
     toggleMenu: () => void;
+    closeMenu: () => void;
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -34,11 +35,17 @@ export const AppProvider = ({ children }: AppProviderProps) => {
         setBottomSheetOpen(!isBottomSheetOpen);
     };
 
+    const closeMenu = () => {
+        menuBottomSheet.current?.close();
+        setBottomSheetOpen(!isBottomSheetOpen);
+    };
+
     return (
         <AppContext.Provider
             value={{
                 menuBottomSheet,
                 toggleMenu,
+                closeMenu,
             }}
         >
             {children}

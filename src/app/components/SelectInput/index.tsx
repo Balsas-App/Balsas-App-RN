@@ -3,21 +3,29 @@ import React, { useEffect, useState } from "react";
 import {
     View,
     Text,
-    TextInput,
     StyleSheet,
     TouchableOpacity,
     Modal,
-    Button,
+    TouchableWithoutFeedback,
+    TouchableNativeFeedback,
 } from "react-native";
 
 type ComponentProps = {
     label?: string;
     placeholder?: string;
+    value?: string | null;
+    options: string[];
     onChange?: (value: string) => void;
 };
 
 const Component = (props: ComponentProps) => {
     const [modalVisible, setModalVisible] = useState(false);
+    const [value, setValue] = useState(props.value ? props.value : "");
+
+    useEffect(() => {
+        setModalVisible(false);
+        if (props.onChange) props.onChange(value);
+    }, [value]);
 
     return (
         <View style={styles.inputWrapper}>
@@ -27,7 +35,11 @@ const Component = (props: ComponentProps) => {
                 style={styles.inputContainer}
                 onPress={() => setModalVisible(true)}
             >
-                <Text style={styles.placeholder}>{props.placeholder}</Text>
+                {value ? (
+                    <Text style={styles.value}>{value}</Text>
+                ) : (
+                    <Text style={styles.placeholder}>{props.placeholder}</Text>
+                )}
                 <Entypo
                     name="chevron-thin-down"
                     size={20}
@@ -39,17 +51,43 @@ const Component = (props: ComponentProps) => {
                 visible={modalVisible}
                 transparent
                 animationType="fade"
-                onRequestClose={() => setModalVisible(false)} // Android: botão voltar
+                onRequestClose={() => setModalVisible(false)}
             >
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <Text>Esse é o modal nativo 🧱</Text>
-                        <Button
-                            title="Fechar"
-                            onPress={() => setModalVisible(false)}
-                        />
+                <TouchableWithoutFeedback
+                    onPress={() => setModalVisible(false)}
+                >
+                    <View style={styles.modalOverlay}>
+                        <TouchableWithoutFeedback onPress={() => {}}>
+                            <View style={styles.modalContent}>
+                                {props.options.map((option, index) => (
+                                    <TouchableNativeFeedback
+                                        key={index}
+                                        background={TouchableNativeFeedback.Ripple(
+                                            "rgba(0,0,0,0.2)",
+                                            false
+                                        )}
+                                        onPress={() => setValue(option)}
+                                    >
+                                        <View
+                                            style={[
+                                                styles.option,
+                                                index ==
+                                                    props.options.length -
+                                                        1 && {
+                                                    borderBottomWidth: 0,
+                                                }, // Sem borda no ultimo item
+                                            ]}
+                                        >
+                                            <Text style={styles.optionText}>
+                                                {option}
+                                            </Text>
+                                        </View>
+                                    </TouchableNativeFeedback>
+                                ))}
+                            </View>
+                        </TouchableWithoutFeedback>
                     </View>
-                </View>
+                </TouchableWithoutFeedback>
             </Modal>
         </View>
     );
@@ -81,6 +119,10 @@ const styles = StyleSheet.create({
         color: "rgba(129, 136, 152, 1)",
         fontSize: 16,
     },
+    value: {
+        color: "rgba(10, 27, 34, 1)",
+        fontSize: 16,
+    },
     modalOverlay: {
         flex: 1,
         backgroundColor: "rgba(0,0,0,0.3)",
@@ -96,5 +138,15 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,
+        paddingVertical: 16,
+    },
+    option: {
+        paddingHorizontal: 40,
+        paddingVertical: 16,
+        borderBottomWidth: 1,
+        borderBlockColor: "rgba(233, 236, 242, 1)",
+    },
+    optionText: {
+        fontSize: 16,
     },
 });

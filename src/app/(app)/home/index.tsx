@@ -9,13 +9,15 @@ import {
     View,
 } from "react-native";
 import { useAuth } from "@contexts/AuthContext";
-import { SafeAreaView } from "react-native-safe-area-context";
 import AppHeader from "@components/AppHeader";
 import { ScrollView } from "react-native-gesture-handler";
 import SelectInput from "@components/SelectInput";
+import { useState } from "react";
 
 export default function Page() {
     const { authenticated, logout } = useAuth();
+    const [ferrie, setFerrie] = useState<string | null>(null);
+    const [segment, setSegment] = useState<string | null>(null);
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -32,6 +34,17 @@ export default function Page() {
                         <SelectInput
                             label="Balsa"
                             placeholder="Selecione uma balsa"
+                            options={["balsa 1", "balsa 2"]}
+                            value={ferrie}
+                            onChange={(value) => setFerrie(value)}
+                        />
+
+                        <SelectInput
+                            label="Trecho"
+                            placeholder="Selecione um trecho"
+                            options={["Ceasa - Careiro", "Careiro -  Ceasa"]}
+                            value={segment}
+                            onChange={(value) => setSegment(value)}
                         />
                     </View>
                 </ScrollView>

@@ -8,8 +8,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 const RootLayout = () => {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <AppProvider>
-                <AuthProvider>
+            <AuthProvider>
+                <AppProvider>
                     <React.Fragment>
                         <StatusBar style="light" />
                         <Stack
@@ -18,8 +18,8 @@ const RootLayout = () => {
                             }}
                         />
                     </React.Fragment>
-                </AuthProvider>
-            </AppProvider>
+                </AppProvider>
+            </AuthProvider>
         </GestureHandlerRootView>
     );
 };

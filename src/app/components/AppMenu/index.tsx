@@ -1,14 +1,40 @@
 import React from "react";
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
 
 import MenuIconShip from "@assets/icons/menu-item-ship.svg";
 import MenuIconClock from "@assets/icons/menu-item-clock.svg";
 import MenuIconReports from "@assets/icons/menu-item-reports.svg";
-import { Entypo } from "@expo/vector-icons";
+import { AntDesign, Entypo } from "@expo/vector-icons";
+import { useAuth } from "@contexts/AuthContext";
+import { useApp } from "@contexts/AppContext";
 
 type ComponentProps = {};
 
 const Component = (props: ComponentProps) => {
+    const { closeMenu } = useApp();
+    const { logout } = useAuth();
+
+    const handleLogout = () => {
+        Alert.alert(
+            "Deseja mesmo sair?",
+            "Você será deslogado do aplicativo.",
+            [
+                {
+                    text: "Cancelar",
+                    style: "cancel",
+                },
+                {
+                    text: "Sim",
+                    onPress: async () => {
+                        await logout();
+                        closeMenu();
+                    },
+                },
+            ],
+            { cancelable: true }
+        );
+    };
+
     return (
         <View style={styles.menuContainer}>
             <TouchableOpacity style={styles.menuItem}>
@@ -37,6 +63,14 @@ const Component = (props: ComponentProps) => {
                     size={20}
                     color="rgba(128, 140, 149, 1)"
                 />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
+                <AntDesign
+                    name="poweroff"
+                    size={24}
+                    color="rgba(1, 119, 251, 1)"
+                />
+                <Text style={styles.menuItemText}>Sair</Text>
             </TouchableOpacity>
         </View>
     );
