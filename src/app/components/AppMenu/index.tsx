@@ -7,12 +7,14 @@ import MenuIconReports from "@assets/icons/menu-item-reports.svg";
 import { AntDesign, Entypo } from "@expo/vector-icons";
 import { useAuth } from "@contexts/AuthContext";
 import { useApp } from "@contexts/AppContext";
+import { useRouter } from "expo-router";
 
 type ComponentProps = {};
 
 const Component = (props: ComponentProps) => {
     const { closeMenu } = useApp();
     const { logout } = useAuth();
+    const router = useRouter();
 
     const handleLogout = () => {
         Alert.alert(
@@ -33,6 +35,11 @@ const Component = (props: ComponentProps) => {
             ],
             { cancelable: true }
         );
+    };
+
+    const goTo = (route: string) => {
+        closeMenu();
+        router.push(route);
     };
 
     return (
@@ -58,6 +65,18 @@ const Component = (props: ComponentProps) => {
             <TouchableOpacity style={styles.menuItem}>
                 <MenuIconReports />
                 <Text style={styles.menuItemText}>Relatórios</Text>
+                <Entypo
+                    name="chevron-thin-right"
+                    size={20}
+                    color="rgba(128, 140, 149, 1)"
+                />
+            </TouchableOpacity>
+            <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => goTo("/printers")}
+            >
+                <MenuIconReports />
+                <Text style={styles.menuItemText}>Impressoras</Text>
                 <Entypo
                     name="chevron-thin-right"
                     size={20}

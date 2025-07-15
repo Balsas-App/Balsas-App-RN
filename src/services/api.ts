@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
-const API_BASE = "https://80379f23656c.ngrok-free.app";
+const API_BASE = "https://central-gopher-mildly.ngrok-free.app";
 
 export const storeTokens = async (jwt: string, refresh: string) => {
     await SecureStore.setItemAsync("jwt", jwt);

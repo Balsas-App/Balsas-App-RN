@@ -1,7 +1,7 @@
 {
     "expo": {
-        "name": "balsas-v2",
-        "slug": "balsas-v2",
+        "name": "Balsas",
+        "slug": "balsas",
         "version": "1.0.0",
         "orientation": "portrait",
         "icon": "./assets/icon.png",
@@ -16,19 +16,47 @@
             "supportsTablet": true,
             "config": {
                 "usesNonExemptEncryption": false
-            }
+            },
+            "bundleIdentifier": "br.com.metzker.balsas"
         },
         "android": {
             "adaptiveIcon": {
                 "foregroundImage": "./assets/adaptive-icon.png",
                 "backgroundColor": "#ffffff"
             },
-            "edgeToEdgeEnabled": true
+            "edgeToEdgeEnabled": true,
+            "package": "br.com.metzker.balsas",
+            "permissions": [
+                "android.permission.BLUETOOTH",
+                "android.permission.BLUETOOTH_ADMIN",
+                "android.permission.BLUETOOTH_CONNECT",
+                "android.permission.BLUETOOTH_SCAN",
+                "android.permission.ACCESS_FINE_LOCATION"
+            ]
         },
         "web": {
             "favicon": "./assets/favicon.png"
         },
-        "plugins": ["expo-router", "expo-secure-store"],
-        "scheme": "balsas-app"
+        "plugins": [
+            "expo-router",
+            "expo-secure-store",
+            [
+                "expo-build-properties",
+                {
+                    "android": {
+                        "compileSdkVersion": 34,
+                        "targetSdkVersion": 34,
+                        "minSdkVersion": 24
+                    }
+                }
+            ]
+        ],
+        "scheme": "balsas-app",
+        "extra": {
+            "router": {},
+            "eas": {
+                "projectId": "e022e207-fd8a-4995-a7c3-35753b49b7fb"
+            }
+        }
     }
 }
