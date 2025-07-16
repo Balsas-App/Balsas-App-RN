@@ -13,11 +13,16 @@ import AppHeader from "@components/AppHeader";
 import { ScrollView } from "react-native-gesture-handler";
 import SelectInput from "@components/SelectInput";
 import { useState } from "react";
+import DateInput from "@components/DateInput";
+import TimeInput from "@components/TimeInput";
+import SubmitButton from "@components/SubmitButton";
 
 export default function Page() {
     const { authenticated, logout } = useAuth();
     const [ferrie, setFerrie] = useState<string | null>(null);
     const [segment, setSegment] = useState<string | null>(null);
+    const [date, setDate] = useState(new Date());
+    const [time, setTime] = useState("");
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -46,12 +51,31 @@ export default function Page() {
                             value={segment}
                             onChange={(value) => setSegment(value)}
                         />
+
+                        <View style={styles.dateTime}>
+                            <View style={{ flex: 1 }}>
+                                <DateInput
+                                    label="Data"
+                                    value={date}
+                                    onChange={(value) =>
+                                        value && setDate(value)
+                                    }
+                                />
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <TimeInput
+                                    label="Hora"
+                                    value={time}
+                                    onChange={(value) =>
+                                        value && setTime(value)
+                                    }
+                                />
+                            </View>
+                        </View>
+
+                        <SubmitButton title="Iniciar embarque" />
                     </View>
                 </ScrollView>
-                {authenticated ? <Text>Logado</Text> : <Text>Não logado</Text>}
-                <TouchableOpacity onPress={async () => logout()}>
-                    <Text>Deslogar</Text>
-                </TouchableOpacity>
             </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
     );
@@ -75,5 +99,10 @@ const styles = StyleSheet.create({
     },
     formBody: {
         gap: 16,
+    },
+    dateTime: {
+        flexDirection: "row",
+        gap: 16,
+        marginBottom: 24,
     },
 });

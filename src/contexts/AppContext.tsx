@@ -1,5 +1,9 @@
 import AppMenu from "@components/AppMenu";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import BottomSheet, {
+    BottomSheetBackdrop,
+    BottomSheetBackdropProps,
+    BottomSheetView,
+} from "@gorhom/bottom-sheet";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import React, {
     createContext,
@@ -40,6 +44,15 @@ export const AppProvider = ({ children }: AppProviderProps) => {
         setBottomSheetOpen(!isBottomSheetOpen);
     };
 
+    const renderBackdrop = (props: BottomSheetBackdropProps) => (
+        <BottomSheetBackdrop
+            {...props}
+            disappearsOnIndex={-1}
+            appearsOnIndex={0}
+            pressBehavior="close" // fecha ao clicar no backdrop
+        />
+    );
+
     return (
         <AppContext.Provider
             value={{
@@ -64,6 +77,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
                 enablePanDownToClose={true}
                 index={-1}
                 onClose={() => setBottomSheetOpen(false)}
+                backdropComponent={renderBackdrop}
             >
                 <BottomSheetView style={styles.sheetContainer}>
                     <AppMenu />
