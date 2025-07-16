@@ -13,6 +13,7 @@ import React, {
     useState,
 } from "react";
 import { StyleSheet, Text } from "react-native";
+import Toast, { ErrorToast } from "react-native-toast-message";
 
 type AppContextType = {
     menuBottomSheet: React.RefObject<BottomSheetMethods | null>;
@@ -83,6 +84,30 @@ export const AppProvider = ({ children }: AppProviderProps) => {
                     <AppMenu />
                 </BottomSheetView>
             </BottomSheet>
+            <Toast
+                config={{
+                    error: (props: any) => (
+                        <ErrorToast
+                            {...props}
+                            style={{
+                                borderLeftColor: "red",
+                                backgroundColor: "#ffe6e6",
+                                width: "auto",
+                                marginHorizontal: 20,
+                            }}
+                            text1Style={{
+                                fontSize: 16,
+                                fontWeight: "bold",
+                                color: "#1a1a1a",
+                            }}
+                            text2Style={{
+                                fontSize: 14,
+                                color: "#333",
+                            }}
+                        />
+                    ),
+                }}
+            />
         </AppContext.Provider>
     );
 };

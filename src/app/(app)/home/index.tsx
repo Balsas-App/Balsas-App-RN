@@ -12,17 +12,78 @@ import { useAuth } from "@contexts/AuthContext";
 import AppHeader from "@components/AppHeader";
 import { ScrollView } from "react-native-gesture-handler";
 import SelectInput from "@components/SelectInput";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import DateInput from "@components/DateInput";
 import TimeInput from "@components/TimeInput";
 import SubmitButton from "@components/SubmitButton";
+import BottomSheet, {
+    BottomSheetBackdrop,
+    BottomSheetBackdropProps,
+    BottomSheetView,
+} from "@gorhom/bottom-sheet";
+import Toast from "react-native-toast-message";
 
 export default function Page() {
+    const boardingBottomSheet = useRef<BottomSheet>(null);
+    const [isBottomSheetOpen, setBottomSheetOpen] = useState(false);
     const { authenticated, logout } = useAuth();
     const [ferrie, setFerrie] = useState<string | null>(null);
     const [segment, setSegment] = useState<string | null>(null);
     const [date, setDate] = useState(new Date());
     const [time, setTime] = useState("");
+
+    const renderBackdrop = (props: BottomSheetBackdropProps) => (
+        <BottomSheetBackdrop
+            {...props}
+            disappearsOnIndex={-1}
+            appearsOnIndex={0}
+            pressBehavior="close" // fecha ao clicar no backdrop
+        />
+    );
+
+    const openBoardingBottomSheet = () => {
+        boardingBottomSheet.current?.snapToIndex(0);
+        setBottomSheetOpen(true);
+    };
+
+    const closeBoardingBottomSheet = () => {
+        boardingBottomSheet.current?.close();
+        setBottomSheetOpen(false);
+    };
+
+    const handleStartBoarding = () => {
+        if (!ferrie) {
+            Toast.show({
+                type: "error",
+                text1: "Selecione uma balsa.",
+                position: "top",
+                topOffset: 100,
+            });
+            return;
+        }
+
+        if (!segment) {
+            Toast.show({
+                type: "error",
+                text1: "Selecione um trecho.",
+                position: "top",
+                topOffset: 100,
+            });
+            return;
+        }
+
+        if (!date || !time) {
+            Toast.show({
+                type: "error",
+                text1: "Preencha a data e horário corretamente.",
+                position: "top",
+                topOffset: 100,
+            });
+            return;
+        }
+
+        openBoardingBottomSheet();
+    };
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -73,9 +134,35 @@ export default function Page() {
                             </View>
                         </View>
 
-                        <SubmitButton title="Iniciar embarque" />
+                        <SubmitButton
+                            title="Iniciar embarque"
+                            onPress={handleStartBoarding}
+                        />
                     </View>
                 </ScrollView>
+
+                <BottomSheet
+                    ref={boardingBottomSheet}
+                    backgroundStyle={{
+                        borderTopLeftRadius: 16,
+                        borderTopRightRadius: 16,
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 10 },
+                        shadowOpacity: 1,
+                        shadowRadius: 50,
+                        elevation: 50,
+                    }}
+                    enablePanDownToClose={true}
+                    index={-1}
+                    onClose={() => setBottomSheetOpen(false)}
+                    backdropComponent={renderBackdrop}
+                >
+                    <BottomSheetView style={styles.sheetContainer}>
+                        <Text style={styles.boardingTitle}>
+                            CONFIRMAR EMBARQUE
+                        </Text>
+                    </BottomSheetView>
+                </BottomSheet>
             </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
     );
@@ -104,5 +191,16 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         gap: 16,
         marginBottom: 24,
+    },
+    sheetContainer: {
+        flex: 1,
+        padding: 12,
+        paddingBottom: 24,
+        alignItems: "center",
+    },
+    boardingTitle: {
+        fontWeight: 700,
+        textAlign: "center",
+        fontSize: 20,
     },
 });
