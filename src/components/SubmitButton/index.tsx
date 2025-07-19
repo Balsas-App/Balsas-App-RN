@@ -4,12 +4,17 @@ import {
     View,
     StyleSheet,
     Text,
+    StyleProp,
+    ViewStyle,
+    TextStyle,
 } from "react-native";
 
 type ComponentProps = {
     title: string;
     onPress?: ((event: GestureResponderEvent) => void) | undefined;
     disabled?: boolean;
+    style?: StyleProp<ViewStyle>;
+    textStyle?: StyleProp<TextStyle>;
 };
 const Component = (props: ComponentProps) => {
     return (
@@ -30,12 +35,14 @@ const Component = (props: ComponentProps) => {
                     style={[
                         styles.submitButton,
                         !props.disabled && styles.submitButtonEnabled,
+                        props.style,
                     ]}
                 >
                     <Text
                         style={[
                             styles.submitButtonText,
                             !props.disabled && styles.submitButtonEnabledText,
+                            props.textStyle,
                         ]}
                     >
                         {props.title}

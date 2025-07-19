@@ -4,10 +4,12 @@ import { View, StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
 import MenuIconShip from "@assets/icons/menu-item-ship.svg";
 import MenuIconClock from "@assets/icons/menu-item-clock.svg";
 import MenuIconReports from "@assets/icons/menu-item-reports.svg";
+import MenuIconLogout from "@assets/icons/menu-item-logout.svg";
 import { AntDesign, Entypo } from "@expo/vector-icons";
 import { useAuth } from "@contexts/AuthContext";
 import { useApp } from "@contexts/AppContext";
 import { useRouter } from "expo-router";
+import { usePrinter } from "@contexts/PrinterContext";
 
 type ComponentProps = {};
 
@@ -15,6 +17,7 @@ const Component = (props: ComponentProps) => {
     const { closeMenu } = useApp();
     const { logout } = useAuth();
     const router = useRouter();
+    const { openPrinterList } = usePrinter();
 
     const handleLogout = () => {
         Alert.alert(
@@ -73,9 +76,12 @@ const Component = (props: ComponentProps) => {
             </TouchableOpacity>
             <TouchableOpacity
                 style={styles.menuItem}
-                onPress={() => goTo("/printers")}
+                onPress={() => {
+                    closeMenu();
+                    openPrinterList();
+                }}
             >
-                <MenuIconReports />
+                <AntDesign name="printer" size={24} color="#326BFE" />
                 <Text style={styles.menuItemText}>Impressoras</Text>
                 <Entypo
                     name="chevron-thin-right"
@@ -84,11 +90,7 @@ const Component = (props: ComponentProps) => {
                 />
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
-                <AntDesign
-                    name="poweroff"
-                    size={24}
-                    color="rgba(1, 119, 251, 1)"
-                />
+                <MenuIconLogout color="#326BFE" />
                 <Text style={styles.menuItemText}>Sair</Text>
             </TouchableOpacity>
         </View>
