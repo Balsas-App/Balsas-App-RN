@@ -9,13 +9,14 @@ import {
     Keyboard,
     Platform,
     TouchableNativeFeedback,
+    ActivityIndicator,
 } from "react-native";
 import EmailIcon from "@assets/icons/email-input.svg";
 import PasswordIcon from "@assets/icons/password-input.svg";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import LoginInput from "@components/LoginInput";
 import { useAuth } from "@contexts/AuthContext";
-import { Redirect, router } from "expo-router";
+import { router } from "expo-router";
 import LottieView from "lottie-react-native";
 import Toast, { ErrorToast } from "react-native-toast-message";
 
@@ -57,10 +58,26 @@ export default function Page() {
     }, [loginResponse]);
 
     useLayoutEffect(() => {
-        if (!isCheckingAuth && authenticated) {
+        if (authenticated) {
             router.replace("/home");
         }
-    }, [authenticated, isCheckingAuth]);
+    }, [authenticated]);
+
+    if (isCheckingAuth || authenticated) {
+        return (
+            <View
+                style={{
+                    flex: 1,
+                    backgroundColor: "rgba(50, 107, 254, 1)",
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+            >
+                <StatusBar style="light" />
+                <ActivityIndicator size="large" color="#fff" />
+            </View>
+        );
+    }
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
