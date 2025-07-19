@@ -22,12 +22,18 @@ import BottomSheet, {
     BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import Toast from "react-native-toast-message";
+import BoardingDetailsItem from "@components/BoardingDetailsItem";
+
+import FerryIcon from "@assets/icons/ferry-detail.svg";
+import CalendarIcon from "@assets/icons/calendar-detail.svg";
+import ClockIcon from "@assets/icons/time-detail.svg";
+import { router } from "expo-router";
 
 export default function Page() {
     const boardingBottomSheet = useRef<BottomSheet>(null);
     const [isBottomSheetOpen, setBottomSheetOpen] = useState(false);
     const { authenticated, logout } = useAuth();
-    const [ferrie, setFerrie] = useState<string | null>(null);
+    const [ferry, setFerrie] = useState<string | null>(null);
     const [segment, setSegment] = useState<string | null>(null);
     const [date, setDate] = useState(new Date());
     const [time, setTime] = useState("");
@@ -52,7 +58,7 @@ export default function Page() {
     };
 
     const handleStartBoarding = () => {
-        if (!ferrie) {
+        if (!ferry) {
             Toast.show({
                 type: "error",
                 text1: "Selecione uma balsa.",
@@ -85,6 +91,17 @@ export default function Page() {
         openBoardingBottomSheet();
     };
 
+    const startBoarding = () => {
+        router.push({
+            pathname: "/check-in",
+            params: {
+                ferry: ferry,
+                date: date.toString(),
+                time: time,
+            },
+        });
+    };
+
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <KeyboardAvoidingView
@@ -101,7 +118,7 @@ export default function Page() {
                             label="Balsa"
                             placeholder="Selecione uma balsa"
                             options={["balsa 1", "balsa 2"]}
-                            value={ferrie}
+                            value={ferry}
                             onChange={(value) => setFerrie(value)}
                         />
 
@@ -161,6 +178,51 @@ export default function Page() {
                         <Text style={styles.boardingTitle}>
                             CONFIRMAR EMBARQUE
                         </Text>
+
+                        <View style={styles.boardingDetails}>
+                            <BoardingDetailsItem
+                                label={ferry || ""}
+                                bold={true}
+                                icon={<FerryIcon width={20} height={20} />}
+                            />
+                            <BoardingDetailsItem
+                                label={`Saída: ${date.toLocaleDateString()}`}
+                                icon={<CalendarIcon width={20} height={20} />}
+                            />
+                            <BoardingDetailsItem
+                                label={time}
+                                icon={<ClockIcon width={20} height={20} />}
+                            />
+                        </View>
+
+                        <View style={styles.confirmBoarding}>
+                            <View style={styles.confirmBoardingButton}>
+                                <SubmitButton
+                                    title="Não"
+                                    style={{
+                                        backgroundColor: "#FF603D",
+                                        paddingHorizontal: 40,
+                                    }}
+                                    onPress={() => closeBoardingBottomSheet()}
+                                />
+                            </View>
+
+                            <View style={styles.confirmBoardingButton}>
+                                <SubmitButton
+                                    title="Sim"
+                                    style={{
+                                        backgroundColor: "#FFF",
+                                        borderWidth: 1,
+                                        borderColor: "#0177FB",
+                                        paddingHorizontal: 40,
+                                    }}
+                                    textStyle={{
+                                        color: "#0177FB",
+                                    }}
+                                    onPress={startBoarding}
+                                />
+                            </View>
+                        </View>
                     </BottomSheetView>
                 </BottomSheet>
             </KeyboardAvoidingView>
@@ -202,5 +264,19 @@ const styles = StyleSheet.create({
         fontWeight: 700,
         textAlign: "center",
         fontSize: 20,
+        marginBottom: 12,
+    },
+    boardingDetails: {
+        gap: 6,
+    },
+    confirmBoarding: {
+        flexDirection: "row",
+        gap: 18,
+        paddingHorizontal: 18,
+        marginTop: 32,
+        paddingBottom: 32,
+    },
+    confirmBoardingButton: {
+        flex: 1,
     },
 });
