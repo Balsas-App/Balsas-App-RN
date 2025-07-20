@@ -58,7 +58,7 @@ const Component = (props: ComponentProps) => {
 
     return (
         <View style={styles.inputWrapper}>
-            <Text style={styles.label}>{props.label ? props.label : ""}</Text>
+            {props.label && <Text style={styles.label}>{props.label}</Text>}
 
             <Shadow
                 distance={isFocused ? 8 : 0}

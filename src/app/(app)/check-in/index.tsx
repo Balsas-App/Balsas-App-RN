@@ -33,6 +33,10 @@ const Page = () => {
     const [value, setValue] = useState();
     const [additionalValue, setAdditionalValue] = useState<string>("");
     const [observation, setObservation] = useState("");
+    const [vehicle, setVehicle] = useState<{
+        name: string;
+        value: number;
+    }>();
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -83,11 +87,43 @@ const Page = () => {
                                 {
                                     type: "Hatch",
                                     models: [
-                                        { name: "Onix", value: 50 },
-                                        { name: "Celta", value: 50 },
+                                        { name: "Onix", value: 45 },
+                                        { name: "Celta", value: 45 },
+                                        { name: "Gol", value: 45 },
+                                        { name: "Polo", value: 45 },
+                                    ],
+                                },
+                                {
+                                    type: "Caminhão",
+                                    models: [
+                                        { name: "Caminhão ¾", value: 115 },
+                                        {
+                                            name: "Caminhão ¾ alongado",
+                                            value: 130,
+                                        },
+                                        {
+                                            name: "Caminhão ¾ Plataforma",
+                                            value: 120,
+                                        },
+                                    ],
+                                },
+                                {
+                                    type: "Caminhão Toco",
+                                    models: [
+                                        { name: "Caminhão Toco", value: 130 },
+                                        {
+                                            name: "Caminhão Toco alongado ",
+                                            value: 150,
+                                        },
+                                        {
+                                            name: "Caminhão Toco Baú - colção ou similares até 14mts",
+                                            value: 240,
+                                        },
                                     ],
                                 },
                             ]}
+                            onChange={(value) => setVehicle(value)}
+                            value={vehicle}
                         />
 
                         <View style={styles.doubleInput}>
@@ -96,7 +132,12 @@ const Page = () => {
                                     label="Valor"
                                     placeholder="0,00"
                                     type="text"
-                                    value={value}
+                                    value={
+                                        vehicle?.value.toLocaleString("pt-BR", {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
+                                        }) || "0,00"
+                                    }
                                     sufix={<ValueIcon color="#2B3F6C" />}
                                     disabled
                                 />
