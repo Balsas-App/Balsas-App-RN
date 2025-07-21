@@ -7,12 +7,13 @@ import {
     Text,
     TouchableOpacity,
     View,
+    Alert,
 } from "react-native";
 import { useAuth } from "@contexts/AuthContext";
 import AppHeader from "@components/AppHeader";
 import { ScrollView } from "react-native-gesture-handler";
 import SelectInput from "@components/SelectInput";
-import { useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import DateInput from "@components/DateInput";
 import TimeInput from "@components/TimeInput";
 import SubmitButton from "@components/SubmitButton";
@@ -28,15 +29,37 @@ import FerryIcon from "@assets/icons/ferry-detail.svg";
 import CalendarIcon from "@assets/icons/calendar-detail.svg";
 import ClockIcon from "@assets/icons/time-detail.svg";
 import { router } from "expo-router";
+import { getFerries, getFerryRoutes, initBoarding } from "@services/boarding";
+import { FerryItem, FerryRoute } from "@type/ferries";
+import LoadingScreen from "@components/LoadingScreen";
 
 export default function Page() {
     const boardingBottomSheet = useRef<BottomSheet>(null);
-    const [isBottomSheetOpen, setBottomSheetOpen] = useState(false);
-    const { authenticated, logout } = useAuth();
+    const [loading, setLoading] = useState(false);
+    const [ferriesList, setFerriesList] = useState<FerryItem[]>([]);
+    const [routesList, setRoutesList] = useState<FerryRoute[]>([]);
     const [ferry, setFerrie] = useState<string | null>(null);
-    const [segment, setSegment] = useState<string | null>(null);
+    const [route, setRoute] = useState<string | null>(null);
     const [date, setDate] = useState(new Date());
     const [time, setTime] = useState("");
+
+    useEffect(() => {
+        const loadPageData = async () => {
+            setLoading(true);
+            try {
+                const ferries = await getFerries();
+                setFerriesList(ferries);
+
+                const routes = await getFerryRoutes();
+                setRoutesList(routes);
+            } catch (err) {
+                console.error("Erro ao carregar dados", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadPageData();
+    }, []);
 
     const renderBackdrop = (props: BottomSheetBackdropProps) => (
         <BottomSheetBackdrop
@@ -49,12 +72,10 @@ export default function Page() {
 
     const openBoardingBottomSheet = () => {
         boardingBottomSheet.current?.snapToIndex(0);
-        setBottomSheetOpen(true);
     };
 
     const closeBoardingBottomSheet = () => {
         boardingBottomSheet.current?.close();
-        setBottomSheetOpen(false);
     };
 
     const handleStartBoarding = () => {
@@ -68,7 +89,7 @@ export default function Page() {
             return;
         }
 
-        if (!segment) {
+        if (!route) {
             Toast.show({
                 type: "error",
                 text1: "Selecione um trecho.",
@@ -91,15 +112,60 @@ export default function Page() {
         openBoardingBottomSheet();
     };
 
-    const startBoarding = () => {
-        router.push({
-            pathname: "/check-in",
-            params: {
-                ferry: ferry,
-                date: date.toString(),
-                time: time,
-            },
-        });
+    const startBoarding = async () => {
+        const ferryObj = ferriesList.find((item) => ferry == item.name);
+        const routeObj = routesList.find((item) => route == item.route);
+        const date_in = new Date();
+
+        if (!ferryObj || !routeObj) {
+            return;
+        }
+
+        const boarding = await initBoarding(ferryObj.id, routeObj.id, date_in);
+
+        if (boarding.success && boarding.continue) {
+            Alert.alert(
+                "Um embarque com esta balsa está em andamento",
+                "Deseja continuar o embarque?",
+                [
+                    {
+                        text: "Cancelar",
+                        style: "cancel",
+                        onPress: () => console.log("Cancelado"),
+                    },
+                    {
+                        text: "Continuar",
+                        onPress: () => {
+                            router.push({
+                                pathname: "/check-in",
+                                params: {
+                                    boarding: boarding.boarding_id,
+                                    ferry: ferry,
+                                    date: date.toString(),
+                                    time: time,
+                                },
+                            });
+                        },
+                    },
+                ],
+                { cancelable: false }
+            );
+        } else if (boarding.success && !boarding.continue) {
+            router.push({
+                pathname: "/check-in",
+                params: {
+                    boarding: boarding.boarding_id,
+                    ferry: ferry,
+                    date: date.toString(),
+                    time: time,
+                },
+            });
+        } else {
+            Alert.alert(
+                "Ocorreu um erro ao iniciar embarque.",
+                boarding.message || "Tente novamente mais tarde."
+            );
+        }
     };
 
     return (
@@ -117,7 +183,7 @@ export default function Page() {
                         <SelectInput
                             label="Balsa"
                             placeholder="Selecione uma balsa"
-                            options={["balsa 1", "balsa 2"]}
+                            options={ferriesList.map((ferry) => ferry.name)}
                             value={ferry}
                             onChange={(value) => setFerrie(value)}
                         />
@@ -125,9 +191,9 @@ export default function Page() {
                         <SelectInput
                             label="Trecho"
                             placeholder="Selecione um trecho"
-                            options={["Ceasa - Careiro", "Careiro -  Ceasa"]}
-                            value={segment}
-                            onChange={(value) => setSegment(value)}
+                            options={routesList.map((route) => route.route)}
+                            value={route}
+                            onChange={(value) => setRoute(value)}
                         />
 
                         <View style={styles.dateTime}>
@@ -171,7 +237,6 @@ export default function Page() {
                     }}
                     enablePanDownToClose={true}
                     index={-1}
-                    onClose={() => setBottomSheetOpen(false)}
                     backdropComponent={renderBackdrop}
                 >
                     <BottomSheetView style={styles.sheetContainer}>
@@ -225,6 +290,8 @@ export default function Page() {
                         </View>
                     </BottomSheetView>
                 </BottomSheet>
+
+                {loading && <LoadingScreen />}
             </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
     );
