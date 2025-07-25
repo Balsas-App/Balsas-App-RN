@@ -13,6 +13,7 @@ import AccordionArrow from "@assets/icons/accordion-arrow.svg";
 import TextInput from "@components/TextInput";
 
 type SelectItem = {
+    id: number;
     name: string;
     value: number;
 };
@@ -78,15 +79,21 @@ const Component = (props: ComponentProps) => {
     }, [value]);
 
     useEffect(() => {
-        const filtered = filterTypes(props.data, searchText) || [];
-        setFilteredData(filtered);
+        if (!searchText) {
+            if (Array.isArray(props.data)) {
+                setFilteredData(props.data);
+            }
+        } else {
+            const filtered = filterTypes(props.data || [], searchText) || [];
+            setFilteredData(filtered);
 
-        if (filtered.length == 1) {
-            setCurrentAccordionType(filtered[0].type);
-        } else if (filtered.length > 1) {
-            setCurrentAccordionType(null);
+            if (filtered.length == 1) {
+                setCurrentAccordionType(filtered[0].type);
+            } else if (filtered.length > 1) {
+                setCurrentAccordionType(null);
+            }
         }
-    }, [searchText]);
+    }, [searchText, props.data]);
 
     useEffect(() => {
         setCurrentAccordionType(null);

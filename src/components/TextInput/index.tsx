@@ -12,6 +12,7 @@ type BaseInput = {
     sufix?: React.ReactNode;
     disabled?: boolean;
     numberOfLines?: number;
+    uppercase?: boolean;
 };
 
 type ComponentProps =
@@ -86,7 +87,13 @@ const Component = (props: ComponentProps) => {
                         style={styles.input}
                         placeholder={props.placeholder ? props.placeholder : ""}
                         placeholderTextColor="#A4ACB9"
-                        value={props.value?.toString()}
+                        value={
+                            value !== undefined
+                                ? props.uppercase
+                                    ? value.toString().toUpperCase()
+                                    : value.toString()
+                                : ""
+                        }
                         onFocus={() => {
                             if (props.onFocus) props.onFocus();
                             setIsFocused(true);

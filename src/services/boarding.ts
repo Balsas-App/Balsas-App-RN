@@ -65,3 +65,27 @@ export const initBoarding = async (
         };
     }
 };
+
+type GetBoardingResponse = {
+    ferry_name: string;
+    route_name: string;
+    time_in: Date;
+    total_checkins: number;
+} | null;
+
+export const getBoarding = async (
+    boarding_id: number
+): Promise<GetBoardingResponse> => {
+    try {
+        const response = await api.get(`/boardings/${boarding_id}`);
+
+        return {
+            ferry_name: response.data.ferry_name,
+            route_name: response.data.route_name,
+            time_in: new Date(response.data.time_in),
+            total_checkins: response.data.checkins_count,
+        };
+    } catch (error: any) {
+        return null;
+    }
+};

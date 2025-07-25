@@ -5,8 +5,7 @@ import ClockIcon from "@assets/icons/time-detail.svg";
 
 type ComponentProps = {
     ferry: string;
-    date: string;
-    time: string;
+    date: Date;
 };
 
 const Component = (props: ComponentProps) => {
@@ -27,7 +26,13 @@ const Component = (props: ComponentProps) => {
                 </View>
                 <View style={styles.infoItem}>
                     <ClockIcon width={24} height={24} color="#717171" />
-                    <Text style={styles.infoItemText}>{props.time}</Text>
+                    <Text style={styles.infoItemText}>
+                        {date.toLocaleTimeString("pt-BR", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
+                        })}
+                    </Text>
                 </View>
             </View>
         </View>

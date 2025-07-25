@@ -139,10 +139,7 @@ export default function Page() {
                             router.push({
                                 pathname: "/check-in",
                                 params: {
-                                    boarding: boarding.boarding_id,
-                                    ferry: ferry,
-                                    date: date.toString(),
-                                    time: time,
+                                    boarding_id: boarding.boarding_id,
                                 },
                             });
                         },
