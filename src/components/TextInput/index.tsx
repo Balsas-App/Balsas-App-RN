@@ -25,6 +25,12 @@ const Component = (props: ComponentProps) => {
         props.value ? props.value : ""
     );
 
+    useEffect(() => {
+        if (props.value) {
+            setValue(props.value);
+        }
+    }, [props.value]);
+
     function formatMoney(value: string): string {
         const digits = value.replace(/\D/g, "");
 

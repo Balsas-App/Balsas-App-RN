@@ -29,8 +29,12 @@ import BottomSheet, {
     BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import DoneCheckin from "@assets/images/done-checkin.svg";
-import { createCheckin } from "@services/checkin";
+import ErrorCheckin from "@assets/images/error-checkin.svg";
+import { createCheckin, getCheckin } from "@services/checkin";
 import Toast from "react-native-toast-message";
+import FerryIcon from "@assets/icons/ferry-detail.svg";
+import CalendarIcon from "@assets/icons/calendar-detail.svg";
+import ClockIcon from "@assets/icons/time-detail.svg";
 
 const Page = () => {
     const params = useLocalSearchParams();
@@ -54,6 +58,13 @@ const Page = () => {
     }>();
     const [checkinId, setCheckinId] = useState<number | null>(null);
     const doneBottomSheet = useRef<BottomSheet>(null);
+    const samePlateBottomSheet = useRef<BottomSheet>(null);
+    const [alreadyCheckin, setAlreadyCheckin] = useState<{
+        plate: string;
+        ferry: string;
+        date: string;
+        time: string;
+    } | null>();
 
     useEffect(() => {
         const loadBoarding = async () => {
@@ -66,8 +77,6 @@ const Page = () => {
 
                 const vehicles = await getVehiclesList();
                 setVehiclesList(vehicles);
-
-                setLoading(false);
             } else {
                 Alert.alert(
                     "Ocorreu um erro ao carregar dados do embarque",
@@ -81,6 +90,8 @@ const Page = () => {
                     { cancelable: false }
                 );
             }
+
+            setLoading(false);
         };
 
         loadBoarding();
@@ -95,12 +106,17 @@ const Page = () => {
         />
     );
 
-    const openBottomSheet = () => {
-        doneBottomSheet.current?.snapToIndex(0);
+    const openBottomSheet = (sheet: string) => {
+        if (sheet == "done") {
+            doneBottomSheet.current?.snapToIndex(0);
+        } else if (sheet == "plate") {
+            samePlateBottomSheet.current?.snapToIndex(0);
+        }
     };
 
     const closeBottomSheet = () => {
         doneBottomSheet.current?.close();
+        samePlateBottomSheet.current?.close();
     };
 
     const handleCheckin = async () => {
@@ -123,7 +139,7 @@ const Page = () => {
         );
 
         if (response.success) {
-            openBottomSheet();
+            openBottomSheet("done");
             setCheckinId(response.checkin_id);
             setBoardingData((prev) => {
                 if (!prev) return prev;
@@ -133,13 +149,39 @@ const Page = () => {
                 };
             });
         } else {
-            Toast.show({
-                type: "error",
-                text1: "Ocorreu um erro",
-                text2: response.message,
-                position: "top",
-                topOffset: 100,
-            });
+            if (response.checkin_id) {
+                const checkinData = await getCheckin(response.checkin_id);
+
+                if (checkinData) {
+                    setAlreadyCheckin({
+                        plate: checkinData.plate,
+                        ferry: checkinData.ferry_name,
+                        date: new Date(
+                            checkinData.date_in
+                        ).toLocaleDateString(),
+                        time: new Date(
+                            checkinData.date_in
+                        ).toLocaleTimeString(),
+                    });
+                    openBottomSheet("plate");
+                } else {
+                    Toast.show({
+                        type: "error",
+                        text1: "Ocorreu um erro",
+                        text2: response.message,
+                        position: "top",
+                        topOffset: 100,
+                    });
+                }
+            } else {
+                Toast.show({
+                    type: "error",
+                    text1: "Ocorreu um erro",
+                    text2: response.message,
+                    position: "top",
+                    topOffset: 100,
+                });
+            }
         }
         setLoading(false);
     };
@@ -155,19 +197,15 @@ const Page = () => {
         closeBottomSheet();
     };
 
-    if (!boardingData) {
-        return <LoadingScreen />;
-    }
-
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <KeyboardAvoidingView
                 style={styles.container}
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                behavior={Platform.OS === "ios" ? "padding" : "padding"}
             >
                 <AppHeader
                     title={
-                        boardingData.total_checkins
+                        boardingData?.total_checkins
                             ? `Embarque (${boardingData.total_checkins})`
                             : `Embarque`
                     }
@@ -175,8 +213,8 @@ const Page = () => {
 
                 <ScrollView style={styles.checkIn}>
                     <BoardingHeader
-                        ferry={boardingData.ferry_name}
-                        date={boardingData.time_in}
+                        ferry={boardingData?.ferry_name || ""}
+                        date={boardingData?.time_in || new Date()}
                     />
 
                     <View style={styles.form}>
@@ -332,6 +370,109 @@ const Page = () => {
                     </BottomSheetView>
                 </BottomSheet>
 
+                <BottomSheet
+                    ref={samePlateBottomSheet}
+                    backgroundStyle={{
+                        borderTopLeftRadius: 16,
+                        borderTopRightRadius: 16,
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 10 },
+                        shadowOpacity: 1,
+                        shadowRadius: 50,
+                        elevation: 50,
+                    }}
+                    enablePanDownToClose={true}
+                    index={-1}
+                    backdropComponent={renderBackdrop}
+                >
+                    <BottomSheetView style={styles.sheetContainer}>
+                        <View style={styles.sheetContent}>
+                            <ErrorCheckin />
+                            <Text
+                                style={[
+                                    styles.sheetTitle,
+                                    { fontSize: 20, fontWeight: "bold" },
+                                ]}
+                            >
+                                Esta placa já foi registrada!
+                            </Text>
+                            <View style={styles.samePlateContainer}>
+                                <View style={styles.samePlateInfos}>
+                                    <View style={styles.samePlateInfoItem}>
+                                        <Text
+                                            style={[
+                                                styles.samePlateInfoItemText,
+                                                {
+                                                    fontWeight: "bold",
+                                                    color: "#4D4D4D",
+                                                },
+                                            ]}
+                                        >
+                                            Placa:
+                                        </Text>
+                                        <Text
+                                            style={[
+                                                styles.samePlateInfoItemText,
+                                                {
+                                                    color: "#4D4D4D",
+                                                },
+                                            ]}
+                                        >
+                                            {alreadyCheckin?.plate}
+                                        </Text>
+                                    </View>
+                                    <View style={styles.samePlateInfoItem}>
+                                        <FerryIcon
+                                            width={24}
+                                            height={24}
+                                            color="#000000"
+                                        />
+                                        <Text
+                                            style={styles.samePlateInfoItemText}
+                                        >
+                                            {alreadyCheckin?.ferry}
+                                        </Text>
+                                    </View>
+                                    <View style={styles.samePlateInfoItem}>
+                                        <CalendarIcon
+                                            width={24}
+                                            height={24}
+                                            color="#717171"
+                                        />
+                                        <Text
+                                            style={styles.samePlateInfoItemText}
+                                        >
+                                            {alreadyCheckin?.date}
+                                        </Text>
+                                    </View>
+                                    <View style={styles.samePlateInfoItem}>
+                                        <ClockIcon
+                                            width={24}
+                                            height={24}
+                                            color="#717171"
+                                        />
+                                        <Text
+                                            style={styles.samePlateInfoItemText}
+                                        >
+                                            {alreadyCheckin?.time}
+                                        </Text>
+                                    </View>
+                                </View>
+                                <Text
+                                    style={{
+                                        textAlign: "center",
+                                        color: "#717171",
+                                        fontSize: 16,
+                                    }}
+                                >
+                                    Verifique a lista de veículos em "ver
+                                    resumo".
+                                </Text>
+                            </View>
+                        </View>
+                    </BottomSheetView>
+                </BottomSheet>
+
                 {loading && <LoadingScreen />}
             </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
@@ -373,14 +514,42 @@ const styles = StyleSheet.create({
         color: "#1A1B25",
         fontSize: 32,
         marginTop: 20,
+        fontWeight: 600,
+        textAlign: "center",
     },
     sheetSubtitle: {
         fontSize: 14,
         color: "#9C9C9C",
         marginBottom: 24,
+        textAlign: "center",
     },
     sheetButtons: {
         width: "100%",
         gap: 24,
+    },
+    samePlateContainer: {
+        width: "100%",
+    },
+    samePlateInfos: {
+        width: "100%",
+        justifyContent: "flex-start",
+        alignItems: "flex-start",
+        gap: 6,
+        borderTopWidth: 1,
+        borderBottomWidth: 1,
+        borderTopColor: "#ABBED1",
+        borderBottomColor: "#ABBED1",
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        marginVertical: 16,
+    },
+    samePlateInfoItem: {
+        flexDirection: "row",
+        gap: 8,
+        alignItems: "center",
+    },
+    samePlateInfoItemText: {
+        fontSize: 15,
+        color: "#717171",
     },
 });

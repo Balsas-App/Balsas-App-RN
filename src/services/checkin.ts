@@ -34,8 +34,35 @@ export const createCheckin = async (
     } catch (error: any) {
         return {
             success: false,
-            checkin_id: null,
+            checkin_id: error.response?.data?.checkin_id || null,
             message: error.response?.data?.error || "Erro desconhecido",
         };
+    }
+};
+
+type GetCheckinResponse = {
+    id: number;
+    boarding: number;
+    plate: string;
+    pax: number;
+    vehicle: number;
+    value: number;
+    add_value: number;
+    observation: string;
+    add_value_reason: string;
+    date_in: string;
+    refunded: boolean;
+    ferry_name: string;
+} | null;
+
+export const getCheckin = async (
+    checkin_id: number
+): Promise<GetCheckinResponse> => {
+    try {
+        const response = await api.get(`/checkins/${checkin_id}`);
+
+        return response.data;
+    } catch (error: any) {
+        return null;
     }
 };
