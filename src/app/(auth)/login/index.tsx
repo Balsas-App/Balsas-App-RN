@@ -68,7 +68,7 @@ export default function Page() {
             <View
                 style={{
                     flex: 1,
-                    backgroundColor: "rgba(50, 107, 254, 1)",
+                    backgroundColor: "#061949",
                     alignItems: "center",
                     justifyContent: "center",
                 }}
@@ -192,7 +192,7 @@ export default function Page() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "rgba(50, 107, 254, 1)",
+        backgroundColor: "#061949",
         justifyContent: "flex-start",
     },
     header: {
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
         marginTop: 16,
     },
     submitButtonEnabled: {
-        backgroundColor: "rgba(1, 119, 251, 1)",
+        backgroundColor: "#061949",
     },
     submitButtonText: {
         color: "rgba(164, 172, 185, 1)",

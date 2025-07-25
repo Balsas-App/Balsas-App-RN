@@ -33,7 +33,7 @@ export default function Page() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "rgba(50, 107, 254, 1)",
+        backgroundColor: "#061949",
         alignItems: "center",
         justifyContent: "center",
     },

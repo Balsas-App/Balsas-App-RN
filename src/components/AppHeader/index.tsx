@@ -15,10 +15,12 @@ const Component = (props: ComponentProps) => {
     return (
         <SafeAreaView style={styles.header}>
             <>
+                {/*
+                Temporarily disabled
                 <Image
                     source={require("@assets/images/login-background.png")}
                     style={styles.headerBackground}
-                />
+                /> */}
                 <View style={styles.headerContent}>
                     <TouchableOpacity
                         style={styles.bottomSheetsToggle}
@@ -37,7 +39,7 @@ export default Component;
 
 const styles = StyleSheet.create({
     header: {
-        backgroundColor: "rgba(50, 107, 254, 1)",
+        backgroundColor: "#061949",
         height: 120,
         overflow: "hidden",
         justifyContent: "center",

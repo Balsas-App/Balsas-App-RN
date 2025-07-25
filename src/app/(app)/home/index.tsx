@@ -262,7 +262,7 @@ export default function Page() {
                                 <SubmitButton
                                     title="Não"
                                     style={{
-                                        backgroundColor: "#FF603D",
+                                        backgroundColor: "#E01507",
                                         paddingHorizontal: 40,
                                     }}
                                     onPress={() => closeBoardingBottomSheet()}
@@ -275,11 +275,11 @@ export default function Page() {
                                     style={{
                                         backgroundColor: "#FFF",
                                         borderWidth: 1,
-                                        borderColor: "#0177FB",
+                                        borderColor: "#061949",
                                         paddingHorizontal: 40,
                                     }}
                                     textStyle={{
-                                        color: "#0177FB",
+                                        color: "#061949",
                                     }}
                                     onPress={startBoarding}
                                 />

@@ -458,7 +458,7 @@ const styles = StyleSheet.create({
         overflow: "hidden",
     },
     modalTitle: {
-        backgroundColor: "#0177FB",
+        backgroundColor: "#061949",
         padding: 16,
         maxWidth: "100%",
     },
@@ -488,10 +488,10 @@ const styles = StyleSheet.create({
         height: 20,
         borderRadius: 20,
         borderWidth: 2,
-        borderColor: "#0177FB",
+        borderColor: "#061949",
     },
     printerOptionChecked: {
-        backgroundColor: "#0177FB",
+        backgroundColor: "#061949",
     },
     printerOptionItem: {
         flex: 1,
@@ -510,14 +510,14 @@ const styles = StyleSheet.create({
     },
     printerOptionStatusLoading: {
         fontSize: 14,
-        color: "#0177FB",
+        color: "#061949",
     },
     printerOptionWidth: {
         width: 120,
         height: 46,
         borderRadius: 4,
         borderWidth: 2,
-        borderColor: "#0177FB",
+        borderColor: "#061949",
         flexDirection: "row",
         padding: 2,
     },
@@ -528,7 +528,7 @@ const styles = StyleSheet.create({
         borderRadius: 2,
     },
     printerOptionWidthOptionChecked: {
-        backgroundColor: "#0177FB",
+        backgroundColor: "#061949",
     },
     printerOptionWidthOptionText: {
         fontSize: 14,

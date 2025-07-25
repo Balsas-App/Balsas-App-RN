@@ -81,7 +81,7 @@ const Component = (props: ComponentProps) => {
                     openPrinterList();
                 }}
             >
-                <AntDesign name="printer" size={24} color="#326BFE" />
+                <AntDesign name="printer" size={24} color="#061949" />
                 <Text style={styles.menuItemText}>Impressoras</Text>
                 <Entypo
                     name="chevron-thin-right"
@@ -90,7 +90,7 @@ const Component = (props: ComponentProps) => {
                 />
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
-                <MenuIconLogout color="#326BFE" />
+                <MenuIconLogout color="#061949" />
                 <Text style={styles.menuItemText}>Sair</Text>
             </TouchableOpacity>
         </View>

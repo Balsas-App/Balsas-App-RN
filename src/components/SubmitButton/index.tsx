@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     submitButtonEnabled: {
-        backgroundColor: "rgba(1, 119, 251, 1)",
+        backgroundColor: "#061949",
     },
     submitButtonText: {
         color: "rgba(164, 172, 185, 1)",
