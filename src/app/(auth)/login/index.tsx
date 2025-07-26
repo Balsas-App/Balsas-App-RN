@@ -85,12 +85,7 @@ export default function Page() {
                 style={styles.container}
                 behavior={Platform.OS === "ios" ? "padding" : undefined}
             >
-                <View style={styles.header}>
-                    <Image
-                        source={require("@assets/images/login-background.png")}
-                        style={{ marginRight: -200 }}
-                    />
-                </View>
+                <View style={styles.header}></View>
                 <Text style={styles.title}>Login</Text>
                 <View style={styles.loginForm}>
                     <Text style={styles.loginFormTitle}>Bem vindo</Text>
