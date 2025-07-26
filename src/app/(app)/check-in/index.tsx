@@ -484,7 +484,7 @@ export default Page;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#F1F1F1",
+        backgroundColor: "#FFF",
         justifyContent: "flex-start",
     },
     checkIn: {
