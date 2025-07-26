@@ -28,7 +28,7 @@ export const initBoarding = async (
         const response = await api.post("/boardings", {
             ferry: ferry_id,
             route: route_id,
-            date_in: date,
+            date_in: date.toISOString().slice(0, 19).replace("T", " "),
         });
 
         return {

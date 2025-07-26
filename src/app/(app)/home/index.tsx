@@ -151,10 +151,7 @@ export default function Page() {
             router.push({
                 pathname: "/check-in",
                 params: {
-                    boarding: boarding.boarding_id,
-                    ferry: ferry,
-                    date: date.toString(),
-                    time: time,
+                    boarding_id: boarding.boarding_id,
                 },
             });
         } else {
@@ -297,7 +294,7 @@ export default function Page() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#F1F1F1",
+        backgroundColor: "#FFF",
         justifyContent: "flex-start",
     },
     pageContainer: {
