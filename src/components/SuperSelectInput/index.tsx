@@ -161,82 +161,120 @@ const Component = (props: ComponentProps) => {
                             filteredData.map((category, index) => (
                                 <TouchableOpacity
                                     key={index}
-                                    onPress={() =>
-                                        setCurrentAccordionType((prev) =>
-                                            prev == category.type
-                                                ? null
-                                                : category.type
-                                        )
-                                    }
+                                    onPress={() => {
+                                        if (
+                                            category.models.length == 1 &&
+                                            category.type ==
+                                                category.models[0].name
+                                        ) {
+                                            handleSelect(category.models[0]);
+                                        } else {
+                                            setCurrentAccordionType((prev) =>
+                                                prev == category.type
+                                                    ? null
+                                                    : category.type
+                                            );
+                                        }
+                                    }}
                                     style={styles.accordionItem}
                                 >
                                     <View style={styles.accordionTitle}>
                                         <Text style={styles.accordionTitleText}>
                                             {category.type}
                                         </Text>
-                                        <View
-                                            style={
-                                                currentAccordionType ==
-                                                    category.type && {
-                                                    transform: "rotate(90deg)",
+                                        {category.models.length == 1 &&
+                                        category.type ==
+                                            category.models[0].name ? (
+                                            <Text
+                                                style={
+                                                    styles.accordionOptionText
                                                 }
-                                            }
-                                        >
-                                            <AccordionArrow
-                                                color="#666D80"
-                                                width={15}
-                                                height={15}
-                                            />
-                                        </View>
+                                            >
+                                                {new Intl.NumberFormat(
+                                                    "pt-BR",
+                                                    {
+                                                        style: "currency",
+                                                        currency: "BRL",
+                                                    }
+                                                ).format(
+                                                    category.models[0].value
+                                                )}
+                                            </Text>
+                                        ) : (
+                                            <View
+                                                style={
+                                                    currentAccordionType ==
+                                                        category.type && {
+                                                        transform:
+                                                            "rotate(90deg)",
+                                                    }
+                                                }
+                                            >
+                                                <AccordionArrow
+                                                    color="#666D80"
+                                                    width={15}
+                                                    height={15}
+                                                />
+                                            </View>
+                                        )}
                                     </View>
-                                    {currentAccordionType == category.type && (
-                                        <View style={styles.accordionOptions}>
-                                            {category.models.map(
-                                                (item, index) => (
-                                                    <TouchableOpacity
-                                                        key={index}
-                                                        style={[
-                                                            styles.accordionOption,
-                                                            index ==
-                                                                category.models
-                                                                    .length -
-                                                                    1 && {
-                                                                borderBottomWidth: 0,
-                                                            },
-                                                        ]}
-                                                        onPress={() =>
-                                                            handleSelect(item)
-                                                        }
-                                                    >
-                                                        <Text
+                                    {(category.models.length != 1 ||
+                                        category.type !=
+                                            category.models[0].name) &&
+                                        currentAccordionType ==
+                                            category.type && (
+                                            <View
+                                                style={styles.accordionOptions}
+                                            >
+                                                {category.models.map(
+                                                    (item, index) => (
+                                                        <TouchableOpacity
+                                                            key={index}
                                                             style={[
-                                                                styles.accordionOptionText,
-                                                                { flex: 1 },
+                                                                styles.accordionOption,
+                                                                index ==
+                                                                    category
+                                                                        .models
+                                                                        .length -
+                                                                        1 && {
+                                                                    borderBottomWidth: 0,
+                                                                },
                                                             ]}
-                                                        >
-                                                            {item.name}
-                                                        </Text>
-                                                        <Text
-                                                            style={
-                                                                styles.accordionOptionText
+                                                            onPress={() =>
+                                                                handleSelect(
+                                                                    item
+                                                                )
                                                             }
                                                         >
-                                                            {new Intl.NumberFormat(
-                                                                "pt-BR",
-                                                                {
-                                                                    style: "currency",
-                                                                    currency:
-                                                                        "BRL",
+                                                            <Text
+                                                                style={[
+                                                                    styles.accordionOptionText,
+                                                                    { flex: 1 },
+                                                                ]}
+                                                            >
+                                                                {item.name}
+                                                            </Text>
+                                                            <Text
+                                                                style={
+                                                                    styles.accordionOptionText
                                                                 }
-                                                            ).format(
-                                                                item.value
-                                                            )}
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                )
-                                            )}
-                                        </View>
-                                    )}
+                                                            >
+                                                                {new Intl.NumberFormat(
+                                                                    "pt-BR",
+                                                                    {
+                                                                        style: "currency",
+                                                                        currency:
+                                                                            "BRL",
+                                                                    }
+                                                                ).format(
+                                                                    item.value
+                                                                )}
+                                                            </Text>
+                                                        </TouchableOpacity>
+                                                    )
+                                                )}
+                                            </View>
+                                        )}
                                 </TouchableOpacity>
                             ))}
                     </View>
