@@ -1,4 +1,5 @@
 import api from "@services/api";
+import { CheckinInfos } from "@type/checkins";
 
 type CreateCheckinResponse = {
     success: boolean;
@@ -40,20 +41,7 @@ export const createCheckin = async (
     }
 };
 
-type GetCheckinResponse = {
-    id: number;
-    boarding: number;
-    plate: string;
-    pax: number;
-    vehicle: number;
-    value: number;
-    add_value: number;
-    observation: string;
-    add_value_reason: string;
-    date_in: string;
-    refunded: boolean;
-    ferry_name: string;
-} | null;
+type GetCheckinResponse = CheckinInfos | null;
 
 export const getCheckin = async (
     checkin_id: number
@@ -64,5 +52,19 @@ export const getCheckin = async (
         return response.data;
     } catch (error: any) {
         return null;
+    }
+};
+
+type GetBoardingCheckinsResponse = CheckinInfos[];
+
+export const getBoardingCheckins = async (
+    boarding_id: number
+): Promise<GetBoardingCheckinsResponse> => {
+    try {
+        const response = await api.get(`/boardings/${boarding_id}/checkins`);
+
+        return response.data;
+    } catch (error: any) {
+        return [];
     }
 };

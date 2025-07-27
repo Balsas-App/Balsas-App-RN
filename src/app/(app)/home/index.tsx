@@ -28,6 +28,7 @@ import BoardingDetailsItem from "@components/BoardingDetailsItem";
 import FerryIcon from "@assets/icons/ferry-detail.svg";
 import CalendarIcon from "@assets/icons/calendar-detail.svg";
 import ClockIcon from "@assets/icons/time-detail.svg";
+import WarningIcon from "@assets/images/warning-checkin.svg";
 import { router } from "expo-router";
 import { getFerries, getFerryRoutes, initBoarding } from "@services/boarding";
 import { FerryItem, FerryRoute } from "@type/ferries";
@@ -121,6 +122,8 @@ export default function Page() {
             return;
         }
 
+        setLoading(true);
+
         const boarding = await initBoarding(ferryObj.id, routeObj.id, date_in);
 
         if (boarding.success && boarding.continue) {
@@ -160,6 +163,8 @@ export default function Page() {
                 boarding.message || "Tente novamente mais tarde."
             );
         }
+
+        setLoading(false);
     };
 
     return (
@@ -234,6 +239,8 @@ export default function Page() {
                     backdropComponent={renderBackdrop}
                 >
                     <BottomSheetView style={styles.sheetContainer}>
+                        <WarningIcon />
+
                         <Text style={styles.boardingTitle}>
                             CONFIRMAR EMBARQUE
                         </Text>
@@ -326,9 +333,12 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 20,
         marginBottom: 12,
+        marginTop: 12,
     },
     boardingDetails: {
         gap: 6,
+        width: "100%",
+        paddingHorizontal: 16,
     },
     confirmBoarding: {
         flexDirection: "row",

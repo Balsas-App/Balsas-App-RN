@@ -322,6 +322,14 @@ const Page = () => {
                                 borderColor: "#898A8D",
                             }}
                             textStyle={{ color: "#000" }}
+                            onPress={() =>
+                                router.push({
+                                    pathname: "/boarding-details",
+                                    params: {
+                                        boarding_id: params.boarding_id,
+                                    },
+                                })
+                            }
                         />
                     </View>
                 </ScrollView>
