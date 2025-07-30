@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     View,
     Alert,
+    BackHandler,
 } from "react-native";
 import { useAuth } from "@contexts/AuthContext";
 import AppHeader from "@components/AppHeader";
@@ -29,10 +30,11 @@ import FerryIcon from "@assets/icons/ferry-detail.svg";
 import CalendarIcon from "@assets/icons/calendar-detail.svg";
 import ClockIcon from "@assets/icons/time-detail.svg";
 import WarningIcon from "@assets/images/warning-checkin.svg";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { getFerries, getFerryRoutes, initBoarding } from "@services/boarding";
 import { FerryItem, FerryRoute } from "@type/ferries";
 import LoadingScreen from "@components/LoadingScreen";
+import useDoubleBackExit from "../../../hooks/useDoubleBackExit";
 
 export default function Page() {
     const boardingBottomSheet = useRef<BottomSheet>(null);
@@ -44,14 +46,18 @@ export default function Page() {
     const [date, setDate] = useState(new Date());
     const [time, setTime] = useState("");
 
+    useDoubleBackExit();
+
     useEffect(() => {
         const loadPageData = async () => {
             setLoading(true);
             try {
-                const ferries = await getFerries();
-                setFerriesList(ferries);
+                const [ferries, routes] = await Promise.all([
+                    getFerries(),
+                    getFerryRoutes(),
+                ]);
 
-                const routes = await getFerryRoutes();
+                setFerriesList(ferries);
                 setRoutesList(routes);
             } catch (err) {
                 console.error("Erro ao carregar dados", err);
@@ -59,6 +65,7 @@ export default function Page() {
                 setLoading(false);
             }
         };
+
         loadPageData();
     }, []);
 
@@ -139,7 +146,7 @@ export default function Page() {
                     {
                         text: "Continuar",
                         onPress: () => {
-                            router.push({
+                            router.replace({
                                 pathname: "/check-in",
                                 params: {
                                     boarding_id: boarding.boarding_id,
@@ -151,7 +158,7 @@ export default function Page() {
                 { cancelable: false }
             );
         } else if (boarding.success && !boarding.continue) {
-            router.push({
+            router.replace({
                 pathname: "/check-in",
                 params: {
                     boarding_id: boarding.boarding_id,

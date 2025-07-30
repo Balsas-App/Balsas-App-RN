@@ -67,34 +67,36 @@ const Page = () => {
     } | null>();
 
     useEffect(() => {
-        const loadBoarding = async () => {
-            const data = await getBoarding(
-                params.boarding_id as unknown as number
-            );
+        const loadData = async () => {
+            try {
+                const [boarding, vehicles] = await Promise.all([
+                    getBoarding(params.boarding_id as unknown as number),
+                    getVehiclesList(),
+                ]);
 
-            if (data) {
-                setBoardingData(data);
+                if (!boarding) {
+                    Alert.alert(
+                        "Ocorreu um erro ao carregar dados do embarque",
+                        "Inicie um novo embarque.",
+                        [{ text: "Ok", onPress: () => router.back() }],
+                        { cancelable: false }
+                    );
+                    return;
+                }
 
-                const vehicles = await getVehiclesList();
+                setBoardingData(boarding);
                 setVehiclesList(vehicles);
-            } else {
+            } catch (error) {
                 Alert.alert(
-                    "Ocorreu um erro ao carregar dados do embarque",
-                    "Inicie um novo embarque.",
-                    [
-                        {
-                            text: "Ok",
-                            onPress: () => router.back(),
-                        },
-                    ],
-                    { cancelable: false }
+                    "Erro de rede",
+                    "Não foi possível carregar os dados. Tente novamente."
                 );
+            } finally {
+                setLoading(false);
             }
-
-            setLoading(false);
         };
 
-        loadBoarding();
+        loadData();
     }, [params.boarding_id]);
 
     const renderBackdrop = (props: BottomSheetBackdropProps) => (

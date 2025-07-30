@@ -7,6 +7,7 @@ export const getVehiclesList = async (): Promise<VehiclesList> => {
 
         return response.data;
     } catch (error: any) {
+        console.error("error vehicles", JSON.stringify(error));
         return [];
     }
 };

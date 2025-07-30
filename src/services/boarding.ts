@@ -71,6 +71,7 @@ type GetBoardingResponse = {
     route_name: string;
     time_in: Date;
     total_checkins: number;
+    closed: 0 | 1;
 } | null;
 
 export const getBoarding = async (
@@ -84,8 +85,21 @@ export const getBoarding = async (
             route_name: response.data.route_name,
             time_in: new Date(response.data.time_in),
             total_checkins: response.data.checkins_count,
+            closed: response.data.closed,
         };
     } catch (error: any) {
-        return null;
+        console.error("error boarding", JSON.stringify(error));
+        return error;
+    }
+};
+
+export const finishBoarding = async (boarding_id: number): Promise<boolean> => {
+    try {
+        const response = await api.put(`/boardings/${boarding_id}/finish`);
+
+        return response.data.success ? true : false;
+    } catch (error: any) {
+        console.error("error finishing boarding", JSON.stringify(error));
+        return error;
     }
 };

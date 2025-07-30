@@ -26,9 +26,7 @@ const Component = (props: ComponentProps) => {
     );
 
     useEffect(() => {
-        if (props.value) {
-            setValue(props.value);
-        }
+        setValue(props.value ?? "");
     }, [props.value]);
 
     function formatMoney(value: string): string {

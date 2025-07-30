@@ -62,9 +62,9 @@ export const getBoardingCheckins = async (
 ): Promise<GetBoardingCheckinsResponse> => {
     try {
         const response = await api.get(`/boardings/${boarding_id}/checkins`);
-
         return response.data;
     } catch (error: any) {
+        console.error("error checkin", JSON.stringify(error));
         return [];
     }
 };

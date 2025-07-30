@@ -10,6 +10,7 @@ type HeaderContent = {
 
 type ComponentProps = {
     checkin: CheckinInfos | HeaderContent;
+    showReason?: boolean;
     isHeader?: boolean;
     isFooter?: boolean;
 };
@@ -55,6 +56,7 @@ const Component = (props: ComponentProps) => {
                 <Text
                     style={[
                         styles.content,
+                        { textAlign: "center" },
                         props.isHeader && styles.contentHeader,
                         props.isFooter && styles.contentFooter,
                     ]}
@@ -68,6 +70,7 @@ const Component = (props: ComponentProps) => {
                 <Text
                     style={[
                         styles.content,
+                        { textAlign: "right" },
                         props.isHeader && styles.contentHeader,
                         props.isFooter && styles.contentFooter,
                     ]}
@@ -80,6 +83,15 @@ const Component = (props: ComponentProps) => {
                         : props.checkin.col4}
                 </Text>
             </View>
+
+            {!!props.showReason &&
+                !props.isHeader &&
+                !props.isFooter &&
+                "add_value_reason" in props.checkin && (
+                    <Text style={styles.addValueDescription}>
+                        {props.checkin.add_value_reason}
+                    </Text>
+                )}
         </View>
     );
 };
@@ -94,6 +106,7 @@ const styles = StyleSheet.create({
         gap: 0,
         flexDirection: "row",
         paddingHorizontal: 16,
+        flexWrap: "wrap",
     },
     column: {},
     content: {
@@ -108,5 +121,10 @@ const styles = StyleSheet.create({
     contentFooter: {
         fontWeight: "bold",
         paddingVertical: 8,
+    },
+    addValueDescription: {
+        fontSize: 12,
+        color: "#212121",
+        marginTop: 6,
     },
 });
