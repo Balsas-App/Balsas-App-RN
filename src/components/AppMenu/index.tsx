@@ -65,7 +65,10 @@ const Component = (props: ComponentProps) => {
                     color="rgba(128, 140, 149, 1)"
                 />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem}>
+            <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => goTo("/reports")}
+            >
                 <MenuIconReports />
                 <Text style={styles.menuItemText}>Relatórios</Text>
                 <Entypo

@@ -1,12 +1,14 @@
 import { useApp } from "@contexts/AppContext";
-import { Feather } from "@expo/vector-icons";
+import { AntDesign, Feather } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import { router } from "expo-router";
 import React, { useRef } from "react";
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type ComponentProps = {
     title: string;
+    showBack?: boolean;
 };
 
 const Component = (props: ComponentProps) => {
@@ -22,12 +24,26 @@ const Component = (props: ComponentProps) => {
                     style={styles.headerBackground}
                 /> */}
                 <View style={styles.headerContent}>
-                    <TouchableOpacity
-                        style={styles.bottomSheetsToggle}
-                        onPress={toggleMenu}
-                    >
-                        <Feather name="menu" size={24} color="#fff" />
-                    </TouchableOpacity>
+                    {props.showBack ? (
+                        <TouchableOpacity
+                            style={styles.bottomSheetsToggle}
+                            onPress={() => router.back()}
+                        >
+                            <AntDesign
+                                name="arrowleft"
+                                size={24}
+                                color="#fff"
+                            />
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity
+                            style={styles.bottomSheetsToggle}
+                            onPress={toggleMenu}
+                        >
+                            <Feather name="menu" size={24} color="#fff" />
+                        </TouchableOpacity>
+                    )}
+
                     <Text style={styles.title}>{props.title}</Text>
                 </View>
             </>

@@ -205,7 +205,7 @@ const Page = () => {
 
     return (
         <>
-            <AppHeader title={"Relatórios"} />
+            <AppHeader title={"Relatórios"} showBack={!boardingData?.closed} />
 
             <ScrollView style={styles.checkinList} stickyHeaderIndices={[2]}>
                 <BoardingHeader

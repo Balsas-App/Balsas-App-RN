@@ -131,44 +131,58 @@ export default function Page() {
 
         setLoading(true);
 
-        const boarding = await initBoarding(ferryObj.id, routeObj.id, date_in);
+        try {
+            const boarding = await initBoarding(
+                ferryObj.id,
+                routeObj.id,
+                date_in
+            );
 
-        if (boarding.success && boarding.continue) {
-            Alert.alert(
-                "Um embarque com esta balsa está em andamento",
-                "Deseja continuar o embarque?",
-                [
-                    {
-                        text: "Cancelar",
-                        style: "cancel",
-                        onPress: () => console.log("Cancelado"),
-                    },
-                    {
-                        text: "Continuar",
-                        onPress: () => {
-                            router.replace({
-                                pathname: "/check-in",
-                                params: {
-                                    boarding_id: boarding.boarding_id,
-                                },
-                            });
+            if (boarding.success && boarding.continue) {
+                Alert.alert(
+                    "Um embarque com esta balsa está em andamento",
+                    "Deseja continuar o embarque?",
+                    [
+                        {
+                            text: "Cancelar",
+                            style: "cancel",
+                            onPress: () => console.log("Cancelado"),
                         },
+                        {
+                            text: "Continuar",
+                            onPress: () => {
+                                router.replace({
+                                    pathname: "/check-in",
+                                    params: {
+                                        boarding_id: boarding.boarding_id,
+                                    },
+                                });
+                            },
+                        },
+                    ],
+                    { cancelable: false }
+                );
+            } else if (boarding.success && !boarding.continue) {
+                router.replace({
+                    pathname: "/check-in",
+                    params: {
+                        boarding_id: boarding.boarding_id,
                     },
-                ],
-                { cancelable: false }
-            );
-        } else if (boarding.success && !boarding.continue) {
-            router.replace({
-                pathname: "/check-in",
-                params: {
-                    boarding_id: boarding.boarding_id,
-                },
+                });
+            } else {
+                Alert.alert(
+                    "Ocorreu um erro ao iniciar embarque.",
+                    boarding.message || "Tente novamente mais tarde."
+                );
+            }
+        } catch (err) {
+            console.log(JSON.stringify(err));
+            Toast.show({
+                type: "error",
+                text1: "erro",
+                position: "top",
+                topOffset: 100,
             });
-        } else {
-            Alert.alert(
-                "Ocorreu um erro ao iniciar embarque.",
-                boarding.message || "Tente novamente mais tarde."
-            );
         }
 
         setLoading(false);
