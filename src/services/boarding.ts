@@ -1,5 +1,7 @@
 import api from "@services/api";
+import { Boarding } from "@type/boardings";
 import { FerryItem, FerryRoute } from "@type/ferries";
+import { getMariaDBTimestamp } from "../utils/date";
 
 export const getFerries = async (): Promise<FerryItem[]> => {
     const response = await api.get("/ferries");
@@ -100,6 +102,29 @@ export const finishBoarding = async (boarding_id: number): Promise<boolean> => {
         return response.data.success ? true : false;
     } catch (error: any) {
         console.error("error finishing boarding", JSON.stringify(error));
+        return error;
+    }
+};
+
+export const getBoardings = async (
+    start: Date | null,
+    end: Date | null,
+    closed: boolean
+): Promise<Boarding[]> => {
+    try {
+        const params: any = {};
+
+        if (start) params.start = getMariaDBTimestamp(start);
+        if (end) params.end = getMariaDBTimestamp(end);
+        params.closed = closed ? "true" : "false";
+
+        console.log(params);
+
+        const response = await api.get("/boardings", { params });
+
+        return response.data;
+    } catch (error: any) {
+        console.error("error getting boardings", JSON.stringify(error));
         return error;
     }
 };

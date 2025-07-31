@@ -14,6 +14,7 @@ import {
     Text,
     ScrollView,
     BackHandler,
+    Platform,
 } from "react-native";
 import LoadingScreen from "@components/LoadingScreen";
 import { CheckinInfos } from "@type/checkins";
@@ -31,6 +32,32 @@ import BottomSheet, {
 } from "@gorhom/bottom-sheet";
 import WarningIcon from "@assets/images/warning-checkin.svg";
 import Toast from "react-native-toast-message";
+import { captureRef } from "react-native-view-shot";
+import * as FileSystem from "expo-file-system";
+import { BluetoothEscposPrinter } from "react-native-bluetooth-escpos-printer";
+
+export const renderToBase64 = async (
+    ref: React.RefObject<any>
+): Promise<string | null> => {
+    try {
+        const uri = await captureRef(ref, {
+            format: "png",
+            quality: 1,
+        });
+
+        const cleanUri =
+            Platform.OS === "ios" ? uri.replace("file://", "") : uri;
+
+        const base64 = await FileSystem.readAsStringAsync(cleanUri, {
+            encoding: FileSystem.EncodingType.Base64,
+        });
+
+        return base64;
+    } catch (error) {
+        console.error("Erro ao gerar base64 da view:", error);
+        return null;
+    }
+};
 
 type GroupedCheckins = {
     vehicle_type: string;
@@ -53,10 +80,25 @@ const Page = () => {
     const [totalValue, setTotalValue] = useState(0);
     const boardingBottomSheet = useRef<BottomSheet>(null);
     const navigation = useNavigation();
+    const viewRef = useRef<View>(null);
+
+    const handlePrint = async () => {
+        const base64Image = await renderToBase64(viewRef);
+        if (!base64Image) return;
+
+        try {
+            await BluetoothEscposPrinter.printPic(base64Image, {
+                width: 384, // ajuste conforme sua impressora
+                left: 0,
+            });
+        } catch (err) {
+            console.error("Erro ao imprimir:", err);
+        }
+    };
 
     useFocusEffect(() => {
         const onBackPress = () => {
-            if (boardingData?.closed) {
+            if (params?.from != "reports" && boardingData?.closed) {
                 router.dismissTo("/home");
                 return true;
             }
@@ -203,126 +245,142 @@ const Page = () => {
         setLoading(false);
     };
 
+    if (loading && !boardingData) return <LoadingScreen />;
+
     return (
         <>
             <AppHeader title={"Relatórios"} showBack={!boardingData?.closed} />
 
             <ScrollView style={styles.checkinList} stickyHeaderIndices={[2]}>
-                <BoardingHeader
-                    ferry={boardingData?.ferry_name || ""}
-                    date={boardingData?.time_in || new Date()}
-                />
-                <View style={{ height: 16 }}></View>
-                <View style={{ backgroundColor: "#fff" }}>
-                    <CheckinDetailsRow
-                        checkin={{
-                            col1: "Placa",
-                            col2: "Veículos",
-                            col3: "Pax",
-                            col4: "Pago",
-                        }}
-                        isHeader={true}
-                    />
-                </View>
-                {checkinsData.length > 0 &&
-                    checkinsData.map((group, key) => (
-                        <View key={key}>
-                            <Text style={styles.categoryTitle}>
-                                {group.vehicle_type}
-                            </Text>
-                            {group.checkins.length > 0 &&
-                                group.checkins.map((checkin, subkey) => (
-                                    <React.Fragment key={subkey}>
-                                        <CheckinDetailsRow checkin={checkin} />
-                                        {subkey ==
-                                            group.checkins.length - 1 && (
-                                            <>
-                                                <View
-                                                    style={{ height: 8 }}
-                                                ></View>
-                                                <CheckinDetailsRow
-                                                    checkin={{
-                                                        col1: "",
-                                                        col2: "Valor Categoria",
-                                                        col3: "",
-                                                        col4: new Intl.NumberFormat(
-                                                            "pt-BR",
-                                                            {
-                                                                style: "currency",
-                                                                currency: "BRL",
-                                                            }
-                                                        ).format(
-                                                            sumCategoryVehicleValues(
-                                                                group.checkins
-                                                            )
-                                                        ),
-                                                    }}
-                                                    isFooter={true}
-                                                />
-                                            </>
-                                        )}
-                                    </React.Fragment>
-                                ))}
-                        </View>
-                    ))}
-
-                <View style={styles.partialValueHeader}>
-                    <Text style={styles.partialValueHeaderText}>
-                        Total parcial
-                    </Text>
-                    <Text style={styles.partialValueHeaderText}>
-                        {new Intl.NumberFormat("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                        }).format(partialValue)}
-                    </Text>
-                </View>
-
-                {checkinsData.length > 0 &&
-                    checkinsData.map((group) =>
-                        group.checkins.filter(
-                            (checkin) => checkin.add_value > 0
-                        )
-                    ) && (
-                        <Text style={styles.categoryTitle}>
-                            Valores adicionais
-                        </Text>
-                    )}
-
-                {checkinsData.length > 0 &&
-                    checkinsData.map((group, key) => (
-                        <View key={key}>
-                            {group.checkins.length > 0 &&
-                                group.checkins
-                                    .filter((checkin) => checkin.add_value > 0)
-                                    .map((checkin, subkey) => {
-                                        return (
-                                            <React.Fragment key={subkey}>
-                                                <CheckinDetailsRow
-                                                    checkin={{
-                                                        ...checkin,
-                                                        value: checkin.add_value,
-                                                    }}
-                                                    showReason={true}
-                                                />
-                                            </React.Fragment>
-                                        );
-                                    })}
-                        </View>
-                    ))}
-
                 <View
-                    style={[styles.partialValueHeader, { borderTopWidth: 0 }]}
+                    ref={viewRef}
+                    collapsable={false}
+                    style={styles.checkinList}
                 >
-                    <Text style={styles.partialValueHeaderText}>
-                        Total total
-                    </Text>
-                    <Text style={styles.partialValueHeaderText}>
-                        {new Intl.NumberFormat("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                        }).format(totalValue)}
-                    </Text>
+                    <BoardingHeader
+                        ferry={boardingData?.ferry_name || ""}
+                        date={boardingData?.time_in || new Date()}
+                    />
+                    <View style={{ height: 16 }}></View>
+                    <View style={{ backgroundColor: "#fff" }}>
+                        <CheckinDetailsRow
+                            checkin={{
+                                col1: "Placa",
+                                col2: "Veículos",
+                                col3: "Pax",
+                                col4: "Pago",
+                            }}
+                            isHeader={true}
+                        />
+                    </View>
+                    {checkinsData.length > 0 &&
+                        checkinsData.map((group, key) => (
+                            <View key={key}>
+                                <Text style={styles.categoryTitle}>
+                                    {group.vehicle_type}
+                                </Text>
+                                {group.checkins.length > 0 &&
+                                    group.checkins.map((checkin, subkey) => (
+                                        <React.Fragment key={subkey}>
+                                            <CheckinDetailsRow
+                                                checkin={checkin}
+                                            />
+                                            {subkey ==
+                                                group.checkins.length - 1 && (
+                                                <>
+                                                    <View
+                                                        style={{ height: 8 }}
+                                                    ></View>
+                                                    <CheckinDetailsRow
+                                                        checkin={{
+                                                            col1: "",
+                                                            col2: "Valor Categoria",
+                                                            col3: "",
+                                                            col4: new Intl.NumberFormat(
+                                                                "pt-BR",
+                                                                {
+                                                                    style: "currency",
+                                                                    currency:
+                                                                        "BRL",
+                                                                }
+                                                            ).format(
+                                                                sumCategoryVehicleValues(
+                                                                    group.checkins
+                                                                )
+                                                            ),
+                                                        }}
+                                                        isFooter={true}
+                                                    />
+                                                </>
+                                            )}
+                                        </React.Fragment>
+                                    ))}
+                            </View>
+                        ))}
+
+                    <View style={styles.partialValueHeader}>
+                        <Text style={styles.partialValueHeaderText}>
+                            Total parcial
+                        </Text>
+                        <Text style={styles.partialValueHeaderText}>
+                            {new Intl.NumberFormat("pt-BR", {
+                                style: "currency",
+                                currency: "BRL",
+                            }).format(partialValue)}
+                        </Text>
+                    </View>
+
+                    {checkinsData.length > 0 &&
+                        checkinsData.map((group) =>
+                            group.checkins.filter(
+                                (checkin) => checkin.add_value > 0
+                            )
+                        ) && (
+                            <Text style={styles.categoryTitle}>
+                                Valores adicionais
+                            </Text>
+                        )}
+
+                    {checkinsData.length > 0 &&
+                        checkinsData.map((group, key) => (
+                            <View key={key}>
+                                {group.checkins.length > 0 &&
+                                    group.checkins
+                                        .filter(
+                                            (checkin) => checkin.add_value > 0
+                                        )
+                                        .map((checkin, subkey) => {
+                                            return (
+                                                <React.Fragment key={subkey}>
+                                                    <CheckinDetailsRow
+                                                        checkin={{
+                                                            ...checkin,
+                                                            value: checkin.add_value,
+                                                        }}
+                                                        showReason={true}
+                                                    />
+                                                </React.Fragment>
+                                            );
+                                        })}
+                            </View>
+                        ))}
+
+                    <View
+                        style={[
+                            styles.partialValueHeader,
+                            { borderTopWidth: 0 },
+                        ]}
+                    >
+                        <Text style={styles.partialValueHeaderText}>
+                            Total total
+                        </Text>
+                        <Text style={styles.partialValueHeaderText}>
+                            {new Intl.NumberFormat("pt-BR", {
+                                style: "currency",
+                                currency: "BRL",
+                            }).format(totalValue)}
+                        </Text>
+                    </View>
                 </View>
 
                 <View style={styles.actions}>
@@ -346,7 +404,7 @@ const Page = () => {
                             borderColor: "#898A8D",
                         }}
                         textStyle={{ color: "#000" }}
-                        onPress={() => {}}
+                        onPress={handlePrint}
                     />
                 </View>
             </ScrollView>
