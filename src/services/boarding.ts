@@ -68,13 +68,7 @@ export const initBoarding = async (
     }
 };
 
-type GetBoardingResponse = {
-    ferry_name: string;
-    route_name: string;
-    time_in: Date;
-    total_checkins: number;
-    closed: 0 | 1;
-} | null;
+type GetBoardingResponse = Boarding | null;
 
 export const getBoarding = async (
     boarding_id: number
@@ -82,13 +76,7 @@ export const getBoarding = async (
     try {
         const response = await api.get(`/boardings/${boarding_id}`);
 
-        return {
-            ferry_name: response.data.ferry_name,
-            route_name: response.data.route_name,
-            time_in: new Date(response.data.time_in),
-            total_checkins: response.data.checkins_count,
-            closed: response.data.closed,
-        };
+        return response.data;
     } catch (error: any) {
         console.error("error boarding", JSON.stringify(error));
         return error;
@@ -117,8 +105,6 @@ export const getBoardings = async (
         if (start) params.start = getMariaDBTimestamp(start);
         if (end) params.end = getMariaDBTimestamp(end);
         params.closed = closed ? "true" : "false";
-
-        console.log(params);
 
         const response = await api.get("/boardings", { params });
 

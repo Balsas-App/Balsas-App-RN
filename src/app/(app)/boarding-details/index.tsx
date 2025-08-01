@@ -35,6 +35,8 @@ import Toast from "react-native-toast-message";
 import { captureRef } from "react-native-view-shot";
 import * as FileSystem from "expo-file-system";
 import { BluetoothEscposPrinter } from "react-native-bluetooth-escpos-printer";
+import ReportPrintView, { PrinterRefProps } from "@components/ReportPrintView";
+import { Boarding } from "@type/boardings";
 
 export const renderToBase64 = async (
     ref: React.RefObject<any>
@@ -66,13 +68,7 @@ type GroupedCheckins = {
 
 const Page = () => {
     const params = useLocalSearchParams();
-    const [boardingData, setBoardingData] = useState<{
-        ferry_name: string;
-        route_name: string;
-        time_in: Date;
-        total_checkins: number;
-        closed: 0 | 1;
-    }>();
+    const [boardingData, setBoardingData] = useState<Boarding>();
     const [checkinsData, setCheckinsData] = useState<GroupedCheckins[]>([]);
     const [loading, setLoading] = useState(true);
     const [vehicles, setVehiclesList] = useState<VehiclesList>([]);
@@ -82,19 +78,7 @@ const Page = () => {
     const navigation = useNavigation();
     const viewRef = useRef<View>(null);
 
-    const handlePrint = async () => {
-        const base64Image = await renderToBase64(viewRef);
-        if (!base64Image) return;
-
-        try {
-            await BluetoothEscposPrinter.printPic(base64Image, {
-                width: 384, // ajuste conforme sua impressora
-                left: 0,
-            });
-        } catch (err) {
-            console.error("Erro ao imprimir:", err);
-        }
-    };
+    const compRef = useRef<PrinterRefProps>(null);
 
     useFocusEffect(() => {
         const onBackPress = () => {
@@ -245,6 +229,10 @@ const Page = () => {
         setLoading(false);
     };
 
+    const handlePrint = () => {
+        compRef.current?.print();
+    };
+
     if (loading && !boardingData) return <LoadingScreen />;
 
     return (
@@ -259,7 +247,11 @@ const Page = () => {
                 >
                     <BoardingHeader
                         ferry={boardingData?.ferry_name || ""}
-                        date={boardingData?.time_in || new Date()}
+                        date={
+                            boardingData?.time_in
+                                ? new Date(boardingData.time_in)
+                                : new Date()
+                        }
                     />
                     <View style={{ height: 16 }}></View>
                     <View style={{ backgroundColor: "#fff" }}>
@@ -461,7 +453,9 @@ const Page = () => {
                     </View>
                 </BottomSheetView>
             </BottomSheet>
-
+            {boardingData && (
+                <ReportPrintView boarding={boardingData} ref={compRef} />
+            )}
             {loading && <LoadingScreen />}
         </>
     );

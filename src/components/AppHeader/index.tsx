@@ -4,7 +4,6 @@ import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
 import React, { useRef } from "react";
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 type ComponentProps = {
     title: string;
@@ -15,7 +14,7 @@ const Component = (props: ComponentProps) => {
     const { toggleMenu } = useApp();
 
     return (
-        <SafeAreaView style={styles.header}>
+        <View style={styles.header}>
             <>
                 {/*
                 Temporarily disabled
@@ -47,7 +46,7 @@ const Component = (props: ComponentProps) => {
                     <Text style={styles.title}>{props.title}</Text>
                 </View>
             </>
-        </SafeAreaView>
+        </View>
     );
 };
 
@@ -56,14 +55,9 @@ export default Component;
 const styles = StyleSheet.create({
     header: {
         backgroundColor: "#061949",
-        height: 120,
+        height: 80,
         overflow: "hidden",
         justifyContent: "center",
-    },
-    headerBackground: {
-        position: "absolute",
-        right: "-50%",
-        top: -130,
     },
     headerContent: {
         flexDirection: "row",
