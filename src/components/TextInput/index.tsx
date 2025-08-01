@@ -13,6 +13,7 @@ type BaseInput = {
     disabled?: boolean;
     numberOfLines?: number;
     uppercase?: boolean;
+    maxLength?: number;
 };
 
 type ComponentProps =
@@ -24,10 +25,6 @@ const Component = (props: ComponentProps) => {
     const [value, setValue] = useState<number | string>(
         props.value ? props.value : ""
     );
-
-    useEffect(() => {
-        setValue(props.value ?? "");
-    }, [props.value]);
 
     function formatMoney(value: string): string {
         const digits = value.replace(/\D/g, "");
@@ -88,9 +85,15 @@ const Component = (props: ComponentProps) => {
                 >
                     {props.prefix}
                     <TextInput
-                        style={styles.input}
+                        style={[
+                            styles.input,
+                            props.uppercase && { textTransform: "uppercase" },
+                        ]}
                         placeholder={props.placeholder ? props.placeholder : ""}
                         placeholderTextColor="#A4ACB9"
+                        maxLength={
+                            props.maxLength ? props.maxLength : undefined
+                        }
                         value={
                             value !== undefined
                                 ? props.uppercase
@@ -112,6 +115,8 @@ const Component = (props: ComponentProps) => {
                                     ? text.replace(/[^0-9]/g, "")
                                     : props.type == "money"
                                     ? formatMoney(text)
+                                    : props.uppercase
+                                    ? text.toUpperCase()
                                     : text
                             );
                         }}
@@ -123,6 +128,9 @@ const Component = (props: ComponentProps) => {
                         editable={!props.disabled}
                         multiline={props.type == "textarea"}
                         numberOfLines={props.numberOfLines}
+                        autoCapitalize={
+                            props.uppercase ? "characters" : undefined
+                        }
                     />
                     {props.sufix}
                 </View>

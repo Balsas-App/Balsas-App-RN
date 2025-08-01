@@ -237,7 +237,10 @@ const Page = () => {
 
     return (
         <>
-            <AppHeader title={"Relatórios"} showBack={!boardingData?.closed} />
+            <AppHeader
+                title={"Relatórios"}
+                showBack={!boardingData?.closed || !!params?.from}
+            />
 
             <ScrollView style={styles.checkinList} stickyHeaderIndices={[2]}>
                 <View
