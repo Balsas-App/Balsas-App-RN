@@ -410,30 +410,6 @@ export const PrinterProvider = ({ children }: PrinterProviderProps) => {
                     </View>
                 </TouchableWithoutFeedback>
             </Modal>
-            <Toast
-                config={{
-                    error: (props: any) => (
-                        <ErrorToast
-                            {...props}
-                            style={{
-                                borderLeftColor: "red",
-                                backgroundColor: "#ffe6e6",
-                                width: "auto",
-                                marginHorizontal: 20,
-                            }}
-                            text1Style={{
-                                fontSize: 16,
-                                fontWeight: "bold",
-                                color: "#1a1a1a",
-                            }}
-                            text2Style={{
-                                fontSize: 14,
-                                color: "#333",
-                            }}
-                        />
-                    ),
-                }}
-            />
         </PrinterContext.Provider>
     );
 };

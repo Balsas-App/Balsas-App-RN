@@ -155,30 +155,6 @@ export default function Page() {
                         />
                     </View>
                 )}
-                <Toast
-                    config={{
-                        error: (props: any) => (
-                            <ErrorToast
-                                {...props}
-                                style={{
-                                    borderLeftColor: "red",
-                                    backgroundColor: "#ffe6e6",
-                                    width: "auto",
-                                    marginHorizontal: 20,
-                                }}
-                                text1Style={{
-                                    fontSize: 16,
-                                    fontWeight: "bold",
-                                    color: "#1a1a1a",
-                                }}
-                                text2Style={{
-                                    fontSize: 14,
-                                    color: "#333",
-                                }}
-                            />
-                        ),
-                    }}
-                />
             </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
     );
@@ -193,7 +169,7 @@ const styles = StyleSheet.create({
     header: {
         alignItems: "flex-end",
         justifyContent: "center",
-        height: 170,
+        height: 120,
         marginBottom: -80,
     },
     title: {

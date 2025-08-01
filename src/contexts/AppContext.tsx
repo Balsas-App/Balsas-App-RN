@@ -12,8 +12,13 @@ import React, {
     useRef,
     useState,
 } from "react";
-import { StyleSheet, Text } from "react-native";
-import Toast, { ErrorToast } from "react-native-toast-message";
+import { StyleSheet, Text, View } from "react-native";
+import Toast, { BaseToastProps, ErrorToast } from "react-native-toast-message";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+import ToastErrorIcon from "@assets/icons/toast-error.svg";
+import ToastWarningIcon from "@assets/icons/toast-warning.svg";
+import ToastSuccessIcon from "@assets/icons/toast-success.svg";
 
 type AppContextType = {
     menuBottomSheet: React.RefObject<BottomSheetMethods | null>;
@@ -45,6 +50,34 @@ export const AppProvider = ({ children }: AppProviderProps) => {
         setBottomSheetOpen(!isBottomSheetOpen);
     };
 
+    const CustomErrorToast = ({ text1, text2, ...rest }: BaseToastProps) => (
+        <View style={styles.toastContainer}>
+            <ToastErrorIcon />
+            <View style={styles.toastTextContainer}>
+                {text1 ? <Text style={styles.toastText1}>{text1}</Text> : null}
+                {text2 ? <Text style={styles.toastText2}>{text2}</Text> : null}
+            </View>
+        </View>
+    );
+    const CustomSuccessToast = ({ text1, text2, ...rest }: BaseToastProps) => (
+        <View style={styles.toastContainer}>
+            <ToastSuccessIcon />
+            <View style={styles.toastTextContainer}>
+                {text1 ? <Text style={styles.toastText1}>{text1}</Text> : null}
+                {text2 ? <Text style={styles.toastText2}>{text2}</Text> : null}
+            </View>
+        </View>
+    );
+    const CustomWarningToast = ({ text1, text2, ...rest }: BaseToastProps) => (
+        <View style={styles.toastContainer}>
+            <ToastWarningIcon />
+            <View style={styles.toastTextContainer}>
+                {text1 ? <Text style={styles.toastText1}>{text1}</Text> : null}
+                {text2 ? <Text style={styles.toastText2}>{text2}</Text> : null}
+            </View>
+        </View>
+    );
+
     const renderBackdrop = (props: BottomSheetBackdropProps) => (
         <BottomSheetBackdrop
             {...props}
@@ -62,62 +95,83 @@ export const AppProvider = ({ children }: AppProviderProps) => {
                 closeMenu,
             }}
         >
-            {children}
+            <SafeAreaView style={styles.appView}>
+                {children}
 
-            <BottomSheet
-                ref={menuBottomSheet}
-                backgroundStyle={{
-                    borderTopLeftRadius: 16,
-                    borderTopRightRadius: 16,
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 10 },
-                    shadowOpacity: 1,
-                    shadowRadius: 50,
-                    elevation: 50,
-                }}
-                enablePanDownToClose={true}
-                index={-1}
-                onClose={() => setBottomSheetOpen(false)}
-                backdropComponent={renderBackdrop}
-            >
-                <BottomSheetView style={styles.sheetContainer}>
-                    <AppMenu />
-                </BottomSheetView>
-            </BottomSheet>
-            <Toast
-                config={{
-                    error: (props: any) => (
-                        <ErrorToast
-                            {...props}
-                            style={{
-                                borderLeftColor: "red",
-                                backgroundColor: "#ffe6e6",
-                                width: "auto",
-                                marginHorizontal: 20,
-                            }}
-                            text1Style={{
-                                fontSize: 16,
-                                fontWeight: "bold",
-                                color: "#1a1a1a",
-                            }}
-                            text2Style={{
-                                fontSize: 14,
-                                color: "#333",
-                            }}
-                        />
-                    ),
-                }}
-            />
+                <BottomSheet
+                    ref={menuBottomSheet}
+                    backgroundStyle={{
+                        borderTopLeftRadius: 16,
+                        borderTopRightRadius: 16,
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 10 },
+                        shadowOpacity: 1,
+                        shadowRadius: 50,
+                        elevation: 50,
+                    }}
+                    enablePanDownToClose={true}
+                    index={-1}
+                    onClose={() => setBottomSheetOpen(false)}
+                    backdropComponent={renderBackdrop}
+                >
+                    <BottomSheetView style={styles.sheetContainer}>
+                        <SafeAreaView
+                            style={styles.sheetSafeView}
+                            edges={["left", "right", "bottom"]}
+                        >
+                            <AppMenu />
+                        </SafeAreaView>
+                    </BottomSheetView>
+                </BottomSheet>
+                <Toast
+                    config={{
+                        error: (props) => <CustomErrorToast {...props} />,
+                        success: (props) => <CustomSuccessToast {...props} />,
+                        info: (props) => <CustomWarningToast {...props} />,
+                    }}
+                />
+            </SafeAreaView>
         </AppContext.Provider>
     );
 };
 
 const styles = StyleSheet.create({
+    appView: {
+        flex: 1,
+        backgroundColor: "#061949",
+    },
     sheetContainer: {
         flex: 1,
         padding: 12,
         paddingBottom: 24,
         alignItems: "center",
+    },
+    sheetSafeView: {
+        flex: 1,
+        alignItems: "center",
+    },
+    toastContainer: {
+        flexDirection: "row",
+        backgroundColor: "#FFFFFF",
+        borderWidth: 1,
+        borderColor: "#E9ECF2",
+        borderRadius: 4,
+        padding: 12,
+        marginHorizontal: 20,
+        alignItems: "center",
+        gap: 16,
+    },
+    toastTextContainer: {
+        flex: 1,
+    },
+    toastText1: {
+        fontSize: 14,
+        color: "#171A26",
+    },
+    toastText2: {
+        fontSize: 12,
+        color: "#333",
+        marginTop: 2,
     },
 });
 
