@@ -1,9 +1,8 @@
 import { useApp } from "@contexts/AppContext";
 import { AntDesign, Feather } from "@expo/vector-icons";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
-import React, { useRef } from "react";
-import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
+import React from "react";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 type ComponentProps = {
     title: string;

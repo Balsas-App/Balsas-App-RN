@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    Modal,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Modal } from "react-native";
 import SearchIcon from "@assets/icons/super-select-search.svg";
 import CloseIcon from "@assets/icons/close-modal.svg";
 import AccordionArrow from "@assets/icons/accordion-arrow.svg";

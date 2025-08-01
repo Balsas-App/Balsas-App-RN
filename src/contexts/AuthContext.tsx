@@ -9,7 +9,7 @@ import api, { clearTokens, getTokens, storeTokens } from "@services/api";
 import { JwtPayload, LoginResponse } from "@type/api";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
-import Toast, { ErrorToast } from "react-native-toast-message";
+import Toast from "react-native-toast-message";
 
 type User = {
     id: number;

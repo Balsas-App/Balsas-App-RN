@@ -17,13 +17,11 @@ import {
     TouchableWithoutFeedback,
     View,
 } from "react-native";
-import Toast, { ErrorToast } from "react-native-toast-message";
 import { useBluetoothPermissions } from "../hooks/useBluetoothPermissions";
 import {
     BluetoothEscposPrinter,
     BluetoothManager,
 } from "react-native-bluetooth-escpos-printer";
-import { AntDesign } from "@expo/vector-icons";
 import SubmitButton from "@components/SubmitButton";
 import { ScrollView } from "react-native-gesture-handler";
 

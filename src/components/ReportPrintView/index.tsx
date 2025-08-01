@@ -5,28 +5,19 @@ import React, {
     useRef,
     useState,
 } from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    TouchableOpacity,
-    Platform,
-    Alert,
-} from "react-native";
-import ReportIcon from "@assets/icons/report.svg";
+import { View, Text, StyleSheet, Platform, Alert } from "react-native";
 import { Boarding } from "@type/boardings";
-import { formatDateLabel } from "../../utils/date";
 import { router, useNavigation } from "expo-router";
 import { VehiclesList } from "@type/vehicles";
 import { captureRef } from "react-native-view-shot";
 import * as FileSystem from "expo-file-system";
 import { BluetoothEscposPrinter } from "react-native-bluetooth-escpos-printer";
 import { CheckinInfos } from "@type/checkins";
-import BoardingHeader from "@components/BoardingHeader";
 import PrintableCheckinDetailsRow from "@components/PrintableCheckinDetailsRow";
 import { getBoarding } from "@services/boarding";
 import { getVehiclesList } from "@services/vehicles";
 import { getBoardingCheckins } from "@services/checkin";
+import PrintableBoardingHeader from "@components/PrintableBoardingHeader";
 
 export const renderToBase64 = async (
     ref: React.RefObject<any>
@@ -185,7 +176,7 @@ const Component = forwardRef<PrinterRefProps, ComponentProps>(
         return (
             <View style={styles.container} ref={viewRef} collapsable={false}>
                 <View style={styles.checkinList}>
-                    <BoardingHeader
+                    <PrintableBoardingHeader
                         ferry={boardingData?.ferry_name || ""}
                         date={
                             boardingData?.time_in
@@ -303,9 +294,7 @@ const Component = forwardRef<PrinterRefProps, ComponentProps>(
                             { borderTopWidth: 0 },
                         ]}
                     >
-                        <Text style={styles.partialValueHeaderText}>
-                            Total total
-                        </Text>
+                        <Text style={styles.partialValueHeaderText}>Total</Text>
                         <Text style={styles.partialValueHeaderText}>
                             {new Intl.NumberFormat("pt-BR", {
                                 style: "currency",

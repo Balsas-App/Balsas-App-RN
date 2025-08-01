@@ -95,10 +95,10 @@ const Component = (props: ComponentProps) => {
                             props.maxLength ? props.maxLength : undefined
                         }
                         value={
-                            value !== undefined
+                            props.value !== undefined
                                 ? props.uppercase
-                                    ? value.toString().toUpperCase()
-                                    : value.toString()
+                                    ? props.value.toString().toUpperCase()
+                                    : props.value.toString()
                                 : ""
                         }
                         onFocus={() => {

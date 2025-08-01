@@ -366,9 +366,7 @@ const Page = () => {
                             { borderTopWidth: 0 },
                         ]}
                     >
-                        <Text style={styles.partialValueHeaderText}>
-                            Total total
-                        </Text>
+                        <Text style={styles.partialValueHeaderText}>Total</Text>
                         <Text style={styles.partialValueHeaderText}>
                             {new Intl.NumberFormat("pt-BR", {
                                 style: "currency",

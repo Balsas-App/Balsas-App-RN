@@ -1,6 +1,6 @@
 export type Boarding = {
     boarding_id: number;
-    time_in: string | Date;
+    time_in: string;
     ferry_name: string;
     route_name: string;
     checkins_count: number;

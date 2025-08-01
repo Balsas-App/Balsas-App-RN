@@ -1,17 +1,6 @@
-import { Entypo } from "@expo/vector-icons";
-import RNDateTimePicker, {
-    DateTimePickerAndroid,
-} from "@react-native-community/datetimepicker";
+import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import React, { useEffect, useState } from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    TouchableOpacity,
-    Modal,
-    TouchableWithoutFeedback,
-    TouchableNativeFeedback,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 import DateIcon from "@assets/icons/date-input.svg";
 import { formatDate } from "../../utils/date";

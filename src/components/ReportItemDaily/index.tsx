@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import ReportIcon from "@assets/icons/report.svg";
 import { Boarding } from "@type/boardings";

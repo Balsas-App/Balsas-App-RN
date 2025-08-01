@@ -36,6 +36,11 @@ import FerryIcon from "@assets/icons/ferry-detail.svg";
 import CalendarIcon from "@assets/icons/calendar-detail.svg";
 import ClockIcon from "@assets/icons/time-detail.svg";
 import { Boarding } from "@type/boardings";
+import {
+    KeyboardAwareScrollView,
+    KeyboardToolbar,
+} from "react-native-keyboard-controller";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Page = () => {
     const params = useLocalSearchParams();
@@ -197,7 +202,7 @@ const Page = () => {
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={{ flex: 1 }}>
+            <View>
                 <AppHeader
                     title={
                         boardingData?.checkins_count
@@ -205,305 +210,353 @@ const Page = () => {
                             : `Embarque`
                     }
                 />
-                <KeyboardAvoidingView
-                    style={styles.container}
-                    behavior={Platform.OS === "ios" ? "padding" : "height"}
-                >
-                    <ScrollView
-                        style={styles.checkIn}
-                        contentContainerStyle={{ flex: 1, paddingBottom: 100 }}
-                        keyboardShouldPersistTaps="handled"
-                    >
-                        <BoardingHeader
-                            ferry={boardingData?.ferry_name || ""}
-                            date={
-                                boardingData?.time_in
-                                    ? new Date(boardingData.time_in)
-                                    : new Date()
-                            }
-                        />
-
-                        <View style={styles.form}>
-                            <View style={styles.doubleInput}>
-                                <View style={{ flex: 1 }}>
-                                    <TextInput
-                                        label="Placa"
-                                        placeholder="XYZ9999"
-                                        type="text"
-                                        maxLength={7}
-                                        value={plate}
-                                        onChange={(text) =>
-                                            setPlate(text.toString())
-                                        }
-                                        uppercase={true}
-                                    />
-                                </View>
-                                <View style={{ flex: 1 }}>
-                                    <TextInput
-                                        label="Qtd Pessoas"
-                                        placeholder="1"
-                                        type="number"
-                                        value={pax}
-                                        sufix={<PaxIcon color="#2B3F6C" />}
-                                        onChange={(text) =>
-                                            setPax(parseInt(text.toString()))
-                                        }
-                                    />
-                                </View>
-                            </View>
-
-                            <SuperSelectInput
-                                label="Tipo de automóvel"
-                                placeholder="Selecione um tipo"
-                                data={vehiclesList}
-                                onChange={(value) => setVehicle(value)}
-                                value={vehicle}
-                            />
-
-                            <View style={styles.doubleInput}>
-                                <View style={{ flex: 1 }}>
-                                    <TextInput
-                                        label="Valor"
-                                        placeholder="0,00"
-                                        type="text"
-                                        value={
-                                            vehicle?.value.toLocaleString(
-                                                "pt-BR",
-                                                {
-                                                    minimumFractionDigits: 2,
-                                                    maximumFractionDigits: 2,
-                                                }
-                                            ) || "0,00"
-                                        }
-                                        sufix={<ValueIcon color="#2B3F6C" />}
-                                        disabled
-                                    />
-                                </View>
-                                <View style={{ flex: 1 }}>
-                                    <TextInput
-                                        label="Valor adicional"
-                                        placeholder="0,00"
-                                        type="money"
-                                        value={additionalValue}
-                                        sufix={<ValueIcon color="#2B3F6C" />}
-                                        onChange={(value) =>
-                                            setAdditionalValue(value.toString())
-                                        }
-                                    />
-                                </View>
-                            </View>
-
-                            {additionalValue &&
-                                additionalValue?.length > 0 &&
-                                additionalValue != "0,00" && (
-                                    <TextInput
-                                        label="Justificativa de valor adicional"
-                                        placeholder="Insira a justificativa"
-                                        type="textarea"
-                                        value={additionalValueReason}
-                                        onChange={(text) =>
-                                            setAdditionalValueReason(
-                                                text.toString()
-                                            )
-                                        }
-                                    />
-                                )}
-
-                            <TextInput
-                                label="Observação"
-                                placeholder="Informações complementares"
-                                type="textarea"
-                                value={observation}
-                                onChange={(text) =>
-                                    setObservation(text.toString())
+                <KeyboardAwareScrollView bottomOffset={64}>
+                    {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss}> */}
+                    <View style={styles.container}>
+                        <View style={styles.checkIn}>
+                            <BoardingHeader
+                                ferry={boardingData?.ferry_name || ""}
+                                date={
+                                    boardingData?.time_in
+                                        ? new Date(boardingData.time_in)
+                                        : new Date()
                                 }
                             />
 
-                            <View style={{ marginTop: 16 }}>
-                                <SubmitButton
-                                    title="Confirmar Veículo"
-                                    onPress={handleCheckin}
-                                    disabled={!plate || !pax || !vehicle}
+                            <View style={styles.form}>
+                                <View style={styles.doubleInput}>
+                                    <View style={{ flex: 1 }}>
+                                        <TextInput
+                                            label="Placa"
+                                            placeholder="XYZ9999"
+                                            type="text"
+                                            maxLength={7}
+                                            value={plate}
+                                            onChange={(text) =>
+                                                setPlate(text.toString())
+                                            }
+                                            uppercase={true}
+                                        />
+                                    </View>
+                                    <View style={{ flex: 1 }}>
+                                        <TextInput
+                                            label="Qtd Pessoas"
+                                            placeholder="1"
+                                            type="number"
+                                            value={pax}
+                                            sufix={<PaxIcon color="#2B3F6C" />}
+                                            onChange={(text) =>
+                                                setPax(
+                                                    parseInt(text.toString())
+                                                )
+                                            }
+                                        />
+                                    </View>
+                                </View>
+
+                                <SuperSelectInput
+                                    label="Tipo de automóvel"
+                                    placeholder="Selecione um tipo"
+                                    data={vehiclesList}
+                                    onChange={(value) => setVehicle(value)}
+                                    value={vehicle}
                                 />
-                            </View>
-                            <SubmitButton
-                                title="Ver resumo"
-                                style={{
-                                    backgroundColor: "#FFFFFF",
-                                    borderWidth: 1,
-                                    borderColor: "#898A8D",
-                                }}
-                                textStyle={{ color: "#000" }}
-                                onPress={() =>
-                                    router.push({
-                                        pathname: "/boarding-details",
-                                        params: {
-                                            boarding_id: params.boarding_id,
-                                        },
-                                    })
-                                }
-                            />
-                        </View>
-                        <View style={{ height: 80 }} />
-                    </ScrollView>
 
-                    <BottomSheet
-                        ref={doneBottomSheet}
-                        backgroundStyle={{
-                            borderTopLeftRadius: 16,
-                            borderTopRightRadius: 16,
-                            shadowColor: "#000",
-                            shadowOffset: { width: 0, height: 10 },
-                            shadowOpacity: 1,
-                            shadowRadius: 50,
-                            elevation: 50,
-                        }}
-                        enablePanDownToClose={true}
-                        index={-1}
-                        backdropComponent={renderBackdrop}
-                    >
-                        <BottomSheetView style={styles.sheetContainer}>
-                            <View style={styles.sheetContent}>
-                                <DoneCheckin />
-                                <Text style={styles.sheetTitle}>
-                                    Confirmado!
-                                </Text>
-                                <Text style={styles.sheetSubtitle}>
-                                    Ticket emitido com sucesso.
-                                </Text>
-                                <View style={styles.sheetButtons}>
-                                    <SubmitButton
-                                        title="Continuar"
-                                        onPress={resetAll}
-                                    />
+                                <View style={styles.doubleInput}>
+                                    <View style={{ flex: 1 }}>
+                                        <TextInput
+                                            label="Valor"
+                                            placeholder="0,00"
+                                            type="text"
+                                            value={
+                                                vehicle?.value.toLocaleString(
+                                                    "pt-BR",
+                                                    {
+                                                        minimumFractionDigits: 2,
+                                                        maximumFractionDigits: 2,
+                                                    }
+                                                ) || "0,00"
+                                            }
+                                            sufix={
+                                                <ValueIcon color="#2B3F6C" />
+                                            }
+                                            disabled
+                                        />
+                                    </View>
+                                    <View style={{ flex: 1 }}>
+                                        <TextInput
+                                            label="Valor adicional"
+                                            placeholder="0,00"
+                                            type="money"
+                                            value={additionalValue}
+                                            sufix={
+                                                <ValueIcon color="#2B3F6C" />
+                                            }
+                                            onChange={(value) =>
+                                                setAdditionalValue(
+                                                    value.toString()
+                                                )
+                                            }
+                                        />
+                                    </View>
+                                </View>
 
-                                    {checkinId && (
-                                        <SubmitButton
-                                            title="Imprimir Comprovante"
-                                            style={{
-                                                backgroundColor: "#FFFFFF",
-                                                borderWidth: 1,
-                                                borderColor: "#898A8D",
-                                            }}
-                                            textStyle={{ color: "#000" }}
+                                {additionalValue &&
+                                    additionalValue?.length > 0 &&
+                                    additionalValue != "0,00" && (
+                                        <TextInput
+                                            label="Justificativa de valor adicional"
+                                            placeholder="Insira a justificativa"
+                                            type="textarea"
+                                            value={additionalValueReason}
+                                            onChange={(text) =>
+                                                setAdditionalValueReason(
+                                                    text.toString()
+                                                )
+                                            }
                                         />
                                     )}
-                                </View>
-                            </View>
-                        </BottomSheetView>
-                    </BottomSheet>
 
-                    <BottomSheet
-                        ref={samePlateBottomSheet}
-                        backgroundStyle={{
-                            borderTopLeftRadius: 16,
-                            borderTopRightRadius: 16,
-                            shadowColor: "#000",
-                            shadowOffset: { width: 0, height: 10 },
-                            shadowOpacity: 1,
-                            shadowRadius: 50,
-                            elevation: 50,
-                        }}
-                        enablePanDownToClose={true}
-                        index={-1}
-                        backdropComponent={renderBackdrop}
-                    >
-                        <BottomSheetView style={styles.sheetContainer}>
-                            <View style={styles.sheetContent}>
-                                <ErrorCheckin />
-                                <Text
-                                    style={[
-                                        styles.sheetTitle,
-                                        { fontSize: 20, fontWeight: "bold" },
-                                    ]}
+                                <TextInput
+                                    label="Observação"
+                                    placeholder="Informações complementares"
+                                    type="textarea"
+                                    value={observation}
+                                    onChange={(text) =>
+                                        setObservation(text.toString())
+                                    }
+                                />
+
+                                <View style={{ marginTop: 16 }}>
+                                    <SubmitButton
+                                        title="Confirmar Veículo"
+                                        onPress={handleCheckin}
+                                        disabled={!plate || !pax || !vehicle}
+                                    />
+                                </View>
+                                <SubmitButton
+                                    title="Ver resumo"
+                                    style={{
+                                        backgroundColor: "#FFFFFF",
+                                        borderWidth: 1,
+                                        borderColor: "#898A8D",
+                                    }}
+                                    textStyle={{ color: "#000" }}
+                                    onPress={() =>
+                                        router.push({
+                                            pathname: "/boarding-details",
+                                            params: {
+                                                boarding_id: params.boarding_id,
+                                            },
+                                        })
+                                    }
+                                />
+                            </View>
+                            <View style={{ height: 80 }} />
+                        </View>
+
+                        <BottomSheet
+                            ref={doneBottomSheet}
+                            backgroundStyle={{
+                                borderTopLeftRadius: 16,
+                                borderTopRightRadius: 16,
+                                shadowColor: "#000",
+                                shadowOffset: { width: 0, height: 10 },
+                                shadowOpacity: 1,
+                                shadowRadius: 50,
+                                elevation: 50,
+                            }}
+                            enablePanDownToClose={true}
+                            index={-1}
+                            backdropComponent={renderBackdrop}
+                        >
+                            <BottomSheetView style={styles.sheetContainer}>
+                                <SafeAreaView
+                                    style={{ flex: 1, width: "100%" }}
+                                    edges={["left", "right", "bottom"]}
                                 >
-                                    Esta placa já foi registrada!
-                                </Text>
-                                <View style={styles.samePlateContainer}>
-                                    <View style={styles.samePlateInfos}>
-                                        <View style={styles.samePlateInfoItem}>
-                                            <Text
-                                                style={[
-                                                    styles.samePlateInfoItemText,
-                                                    {
-                                                        fontWeight: "bold",
-                                                        color: "#4D4D4D",
-                                                    },
-                                                ]}
-                                            >
-                                                Placa:
-                                            </Text>
-                                            <Text
-                                                style={[
-                                                    styles.samePlateInfoItemText,
-                                                    {
-                                                        color: "#4D4D4D",
-                                                    },
-                                                ]}
-                                            >
-                                                {alreadyCheckin?.plate}
-                                            </Text>
-                                        </View>
-                                        <View style={styles.samePlateInfoItem}>
-                                            <FerryIcon
-                                                width={24}
-                                                height={24}
-                                                color="#000000"
+                                    <View style={styles.sheetContent}>
+                                        <DoneCheckin />
+                                        <Text style={styles.sheetTitle}>
+                                            Confirmado!
+                                        </Text>
+                                        <Text style={styles.sheetSubtitle}>
+                                            Ticket emitido com sucesso.
+                                        </Text>
+                                        <View style={styles.sheetButtons}>
+                                            <SubmitButton
+                                                title="Continuar"
+                                                onPress={resetAll}
                                             />
-                                            <Text
-                                                style={
-                                                    styles.samePlateInfoItemText
-                                                }
-                                            >
-                                                {alreadyCheckin?.ferry}
-                                            </Text>
+
+                                            {checkinId && (
+                                                <SubmitButton
+                                                    title="Imprimir Comprovante"
+                                                    style={{
+                                                        backgroundColor:
+                                                            "#FFFFFF",
+                                                        borderWidth: 1,
+                                                        borderColor: "#898A8D",
+                                                    }}
+                                                    textStyle={{
+                                                        color: "#000",
+                                                    }}
+                                                    onPress={() => {
+                                                        router.push({
+                                                            pathname:
+                                                                "/checkin-details",
+                                                            params: {
+                                                                checkin_id:
+                                                                    checkinId,
+                                                            },
+                                                        });
+                                                    }}
+                                                />
+                                            )}
                                         </View>
-                                        <View style={styles.samePlateInfoItem}>
-                                            <CalendarIcon
-                                                width={24}
-                                                height={24}
-                                                color="#717171"
-                                            />
+                                    </View>
+                                </SafeAreaView>
+                            </BottomSheetView>
+                        </BottomSheet>
+
+                        <BottomSheet
+                            ref={samePlateBottomSheet}
+                            backgroundStyle={{
+                                borderTopLeftRadius: 16,
+                                borderTopRightRadius: 16,
+                                shadowColor: "#000",
+                                shadowOffset: { width: 0, height: 10 },
+                                shadowOpacity: 1,
+                                shadowRadius: 50,
+                                elevation: 50,
+                            }}
+                            enablePanDownToClose={true}
+                            index={-1}
+                            backdropComponent={renderBackdrop}
+                        >
+                            <BottomSheetView style={styles.sheetContainer}>
+                                <SafeAreaView
+                                    style={{ flex: 1, width: "100%" }}
+                                    edges={["left", "right", "bottom"]}
+                                >
+                                    <View style={styles.sheetContent}>
+                                        <ErrorCheckin />
+                                        <Text
+                                            style={[
+                                                styles.sheetTitle,
+                                                {
+                                                    fontSize: 20,
+                                                    fontWeight: "bold",
+                                                },
+                                            ]}
+                                        >
+                                            Esta placa já foi registrada!
+                                        </Text>
+                                        <View style={styles.samePlateContainer}>
+                                            <View style={styles.samePlateInfos}>
+                                                <View
+                                                    style={
+                                                        styles.samePlateInfoItem
+                                                    }
+                                                >
+                                                    <Text
+                                                        style={[
+                                                            styles.samePlateInfoItemText,
+                                                            {
+                                                                fontWeight:
+                                                                    "bold",
+                                                                color: "#4D4D4D",
+                                                            },
+                                                        ]}
+                                                    >
+                                                        Placa:
+                                                    </Text>
+                                                    <Text
+                                                        style={[
+                                                            styles.samePlateInfoItemText,
+                                                            {
+                                                                color: "#4D4D4D",
+                                                            },
+                                                        ]}
+                                                    >
+                                                        {alreadyCheckin?.plate}
+                                                    </Text>
+                                                </View>
+                                                <View
+                                                    style={
+                                                        styles.samePlateInfoItem
+                                                    }
+                                                >
+                                                    <FerryIcon
+                                                        width={24}
+                                                        height={24}
+                                                        color="#000000"
+                                                    />
+                                                    <Text
+                                                        style={
+                                                            styles.samePlateInfoItemText
+                                                        }
+                                                    >
+                                                        {alreadyCheckin?.ferry}
+                                                    </Text>
+                                                </View>
+                                                <View
+                                                    style={
+                                                        styles.samePlateInfoItem
+                                                    }
+                                                >
+                                                    <CalendarIcon
+                                                        width={24}
+                                                        height={24}
+                                                        color="#717171"
+                                                    />
+                                                    <Text
+                                                        style={
+                                                            styles.samePlateInfoItemText
+                                                        }
+                                                    >
+                                                        {alreadyCheckin?.date}
+                                                    </Text>
+                                                </View>
+                                                <View
+                                                    style={
+                                                        styles.samePlateInfoItem
+                                                    }
+                                                >
+                                                    <ClockIcon
+                                                        width={24}
+                                                        height={24}
+                                                        color="#717171"
+                                                    />
+                                                    <Text
+                                                        style={
+                                                            styles.samePlateInfoItemText
+                                                        }
+                                                    >
+                                                        {alreadyCheckin?.time}
+                                                    </Text>
+                                                </View>
+                                            </View>
                                             <Text
-                                                style={
-                                                    styles.samePlateInfoItemText
-                                                }
+                                                style={{
+                                                    textAlign: "center",
+                                                    color: "#717171",
+                                                    fontSize: 16,
+                                                }}
                                             >
-                                                {alreadyCheckin?.date}
-                                            </Text>
-                                        </View>
-                                        <View style={styles.samePlateInfoItem}>
-                                            <ClockIcon
-                                                width={24}
-                                                height={24}
-                                                color="#717171"
-                                            />
-                                            <Text
-                                                style={
-                                                    styles.samePlateInfoItemText
-                                                }
-                                            >
-                                                {alreadyCheckin?.time}
+                                                Verifique a lista de veículos em
+                                                "ver resumo".
                                             </Text>
                                         </View>
                                     </View>
-                                    <Text
-                                        style={{
-                                            textAlign: "center",
-                                            color: "#717171",
-                                            fontSize: 16,
-                                        }}
-                                    >
-                                        Verifique a lista de veículos em "ver
-                                        resumo".
-                                    </Text>
-                                </View>
-                            </View>
-                        </BottomSheetView>
-                    </BottomSheet>
+                                </SafeAreaView>
+                            </BottomSheetView>
+                        </BottomSheet>
 
-                    {loading && <LoadingScreen />}
-                </KeyboardAvoidingView>
+                        {loading && <LoadingScreen />}
+                    </View>
+                    {/* </TouchableWithoutFeedback> */}
+                </KeyboardAwareScrollView>
             </View>
         </TouchableWithoutFeedback>
     );

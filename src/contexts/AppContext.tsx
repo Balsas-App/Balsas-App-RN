@@ -12,7 +12,13 @@ import React, {
     useRef,
     useState,
 } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import {
+    KeyboardAvoidingView,
+    Platform,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
 import Toast, { BaseToastProps, ErrorToast } from "react-native-toast-message";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -96,7 +102,17 @@ export const AppProvider = ({ children }: AppProviderProps) => {
             }}
         >
             <SafeAreaView style={styles.appView}>
-                {children}
+                <KeyboardAvoidingView
+                    style={{ flex: 1 }}
+                    behavior={Platform.OS === "ios" ? "padding" : undefined}
+                    enabled
+                    keyboardVerticalOffset={Platform.select({
+                        ios: 80,
+                        android: 500,
+                    })}
+                >
+                    {children}
+                </KeyboardAvoidingView>
 
                 <BottomSheet
                     ref={menuBottomSheet}
