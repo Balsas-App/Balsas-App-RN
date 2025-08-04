@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
-const API_BASE = "http://192.168.15.5:8008";
+const API_BASE = "https://balsas.metzker.com.br";
 
 export const storeTokens = async (jwt: string, refresh: string) => {
     await SecureStore.setItemAsync("jwt", jwt);

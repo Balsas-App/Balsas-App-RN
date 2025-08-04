@@ -43,6 +43,7 @@ import PrintIcon from "@assets/icons/action-print.svg";
 import SendIcon from "@assets/icons/action-send.svg";
 import RefundIcon from "@assets/icons/action-refund.svg";
 import CloseIcon from "@assets/icons/close-modal.svg";
+import CheckinDetailsPrintView from "@components/CheckinDetailsPrintView";
 
 const Page = () => {
     const params = useLocalSearchParams();
@@ -52,7 +53,7 @@ const Page = () => {
     const [vehicles, setVehiclesList] = useState<VehiclesList>([]);
     const navigation = useNavigation();
 
-    // const compRef = useRef<PrinterRefProps>(null);
+    const compRef = useRef<PrinterRefProps>(null);
 
     useEffect(() => {
         const loadCheckin = async () => {
@@ -90,6 +91,10 @@ const Page = () => {
 
         loadCheckin();
     }, [params.checkin_id]);
+
+    const handlePrint = () => {
+        compRef.current?.print();
+    };
 
     if (loading && !checkinData) return <LoadingScreen />;
 
@@ -190,7 +195,10 @@ const Page = () => {
                 )}
 
                 <View style={styles.actions}>
-                    <TouchableOpacity style={styles.action}>
+                    <TouchableOpacity
+                        style={styles.action}
+                        onPress={handlePrint}
+                    >
                         <View style={styles.actionIcon}>
                             <PrintIcon color="#1A1A1A" />
                         </View>
@@ -216,6 +224,11 @@ const Page = () => {
                     </TouchableOpacity>
                 </View>
             </View>
+
+            {checkinData && (
+                <CheckinDetailsPrintView checkin={checkinData} ref={compRef} />
+            )}
+
             {loading && <LoadingScreen />}
         </>
     );

@@ -139,7 +139,7 @@ export default function Page() {
                     </View>
 
                     <View style={styles.version}>
-                        <Text style={styles.versionText}>Balsas v1.0.0</Text>
+                        <Text style={styles.versionText}>Balsas v1.0.4</Text>
                     </View>
                 </View>
                 {isLoading && (
