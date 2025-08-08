@@ -4,6 +4,7 @@ import SearchIcon from "@assets/icons/super-select-search.svg";
 import CloseIcon from "@assets/icons/close-modal.svg";
 import AccordionArrow from "@assets/icons/accordion-arrow.svg";
 import TextInput from "@components/TextInput";
+import { ScrollView } from "react-native-gesture-handler";
 
 type SelectItem = {
     id: number;
@@ -149,7 +150,7 @@ const Component = (props: ComponentProps) => {
                             onChange={(text) => setSearchText(text.toString())}
                         />
                     </View>
-                    <View style={styles.categoriesContainer}>
+                    <ScrollView style={styles.categoriesContainer}>
                         {filteredData &&
                             filteredData.map((category, index) => (
                                 <TouchableOpacity
@@ -270,7 +271,7 @@ const Component = (props: ComponentProps) => {
                                         )}
                                 </TouchableOpacity>
                             ))}
-                    </View>
+                    </ScrollView>
                 </View>
             </Modal>
         </View>
