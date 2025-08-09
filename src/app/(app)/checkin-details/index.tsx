@@ -16,13 +16,20 @@ import {
     BackHandler,
     Platform,
     TouchableOpacity,
+    Modal,
+    TouchableWithoutFeedback,
+    Keyboard,
 } from "react-native";
 import LoadingScreen from "@components/LoadingScreen";
 import { CheckinInfos } from "@type/checkins";
 import { finishBoarding, getBoarding } from "@services/boarding";
 import { getVehiclesList } from "@services/vehicles";
 import { VehiclesList } from "@type/vehicles";
-import { getBoardingCheckins, getCheckin } from "@services/checkin";
+import {
+    changePlate,
+    getBoardingCheckins,
+    getCheckin,
+} from "@services/checkin";
 import CheckinDetailsRow from "@components/CheckinDetailsRow";
 import React from "react";
 import SubmitButton from "@components/SubmitButton";
@@ -44,6 +51,8 @@ import SendIcon from "@assets/icons/action-send.svg";
 import RefundIcon from "@assets/icons/action-refund.svg";
 import CloseIcon from "@assets/icons/close-modal.svg";
 import CheckinDetailsPrintView from "@components/CheckinDetailsPrintView";
+import TextInput from "@components/TextInput";
+import CloseModal from "@assets/icons/close-modal.svg";
 
 const Page = () => {
     const params = useLocalSearchParams();
@@ -52,6 +61,8 @@ const Page = () => {
     const [loading, setLoading] = useState(true);
     const [vehicles, setVehiclesList] = useState<VehiclesList>([]);
     const navigation = useNavigation();
+    const [changePlateModal, setChangePlateModal] = useState(false);
+    const [plate, setPlate] = useState<string>();
 
     const compRef = useRef<PrinterRefProps>(null);
 
@@ -65,6 +76,7 @@ const Page = () => {
 
                 if (data) {
                     setCheckinData(data);
+                    setPlate(data.plate);
 
                     const boarding = await getBoarding(data.boarding);
                     if (boarding) setBoardingData(boarding);
@@ -94,6 +106,40 @@ const Page = () => {
 
     const handlePrint = () => {
         compRef.current?.print();
+    };
+
+    const handleChangePlate = async () => {
+        if (!checkinData || !plate) return;
+
+        try {
+            const response = await changePlate(checkinData?.id, plate);
+
+            if (response) {
+                Toast.show({
+                    type: "success",
+                    text1: "Placa alterada com sucesso!",
+                    position: "top",
+                    topOffset: 100,
+                });
+            } else {
+                Toast.show({
+                    type: "error",
+                    text1: "Ocorreu um erro ao alterar placa.",
+                    position: "top",
+                    topOffset: 100,
+                });
+            }
+        } catch (_e) {
+            Toast.show({
+                type: "error",
+                text1: "Ocorreu um erro ao alterar placa.",
+                position: "top",
+                topOffset: 100,
+            });
+        } finally {
+            setChangePlateModal(false);
+            setLoading(false);
+        }
     };
 
     if (loading && !checkinData) return <LoadingScreen />;
@@ -141,7 +187,11 @@ const Page = () => {
                     <Text style={[styles.infoText, styles.infoTextTitle]}>
                         Placa
                     </Text>
-                    <Text style={styles.infoText}>{checkinData?.plate}</Text>
+                    <TouchableOpacity onPress={() => setChangePlateModal(true)}>
+                        <Text style={styles.infoText}>
+                            {checkinData?.plate}
+                        </Text>
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.info}>
                     <Text style={[styles.infoText, styles.infoTextTitle]}>
@@ -214,7 +264,18 @@ const Page = () => {
                             Enviar comprovante
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.action}>
+                    <TouchableOpacity
+                        style={styles.action}
+                        onPress={() =>
+                            checkinData &&
+                            router.push({
+                                pathname: "/refund",
+                                params: {
+                                    checkin_id: checkinData.id,
+                                },
+                            })
+                        }
+                    >
                         <View style={styles.actionIcon}>
                             <RefundIcon color="#1A1A1A" />
                         </View>
@@ -224,6 +285,45 @@ const Page = () => {
                     </TouchableOpacity>
                 </View>
             </View>
+
+            <Modal
+                visible={changePlateModal}
+                onRequestClose={() => setChangePlateModal(false)}
+                transparent={true}
+            >
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <View style={styles.modal}>
+                        <View style={styles.changePlateForm}>
+                            <View style={styles.changePlateFormTitle}>
+                                <Text>Editar Placa</Text>
+                                <TouchableOpacity
+                                    onPress={() => setChangePlateModal(false)}
+                                >
+                                    <CloseModal />
+                                </TouchableOpacity>
+                            </View>
+                            <View style={styles.changePlateFormBody}>
+                                <TextInput
+                                    placeholder="XYZ9999"
+                                    type="text"
+                                    maxLength={7}
+                                    value={plate}
+                                    onChange={(text) =>
+                                        setPlate(text.toString())
+                                    }
+                                    uppercase={true}
+                                />
+
+                                <SubmitButton
+                                    title="Salvar"
+                                    onPress={handleChangePlate}
+                                    disabled={plate == checkinData?.plate}
+                                />
+                            </View>
+                        </View>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
 
             {checkinData && (
                 <CheckinDetailsPrintView checkin={checkinData} ref={compRef} />
@@ -330,5 +430,35 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: "#717171",
         width: "100%",
+    },
+    modal: {
+        backgroundColor: "rgba(0,0,0,0.3)",
+        position: "absolute",
+        left: 0,
+        top: 0,
+        width: "100%",
+        height: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    changePlateForm: {
+        width: 286,
+        backgroundColor: "#fff",
+    },
+    changePlateFormTitle: {
+        padding: 12,
+        borderBottomWidth: 1,
+        borderBlockColor: "#ABBED1",
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    changePlateFormText: {
+        color: "#0A1B22",
+        fontSize: 16,
+    },
+    changePlateFormBody: {
+        gap: 24,
+        paddingVertical: 36,
+        paddingHorizontal: 16,
     },
 });

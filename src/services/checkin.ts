@@ -68,3 +68,17 @@ export const getBoardingCheckins = async (
         return [];
     }
 };
+
+export const changePlate = async (
+    checkin_id: number,
+    plate: string
+): Promise<boolean> => {
+    try {
+        const response = await api.post(`/checkins/${checkin_id}/plate`, {
+            plate: plate,
+        });
+        return response.data.success;
+    } catch (error: any) {
+        return false;
+    }
+};
