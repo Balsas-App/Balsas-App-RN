@@ -18,7 +18,11 @@ import {
 } from "react-native";
 import LoadingScreen from "@components/LoadingScreen";
 import { CheckinInfos } from "@type/checkins";
-import { finishBoarding, getBoarding } from "@services/boarding";
+import {
+    finishBoarding,
+    getBoarding,
+    sendBoardingReport,
+} from "@services/boarding";
 import { getVehiclesList } from "@services/vehicles";
 import { VehiclesList } from "@type/vehicles";
 import { getBoardingCheckins } from "@services/checkin";
@@ -229,6 +233,27 @@ const Page = () => {
         setLoading(false);
     };
 
+    const handleSendReport = async () => {
+        if (!boardingData) return;
+        const send = await sendBoardingReport(boardingData?.boarding_id);
+
+        if (send) {
+            Toast.show({
+                type: "success",
+                text1: "Relatório enviado com sucesso!",
+                position: "top",
+                topOffset: 100,
+            });
+        } else {
+            Toast.show({
+                type: "error",
+                text1: "Ocorreu um erro ao enviar relatório.",
+                position: "top",
+                topOffset: 100,
+            });
+        }
+    };
+
     const handlePrint = () => {
         compRef.current?.print();
     };
@@ -385,7 +410,7 @@ const Page = () => {
                     ) : (
                         <SubmitButton
                             title="Enviar relatório"
-                            onPress={openBoardingBottomSheet}
+                            onPress={handleSendReport}
                         />
                     )}
 

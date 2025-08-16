@@ -2,7 +2,7 @@
     "expo": {
         "name": "Balsas",
         "slug": "balsas",
-        "version": "1.0.5",
+        "version": "1.0.6",
         "orientation": "portrait",
         "icon": "./assets/icon.png",
         "userInterfaceStyle": "light",
@@ -33,7 +33,7 @@
                 "android.permission.BLUETOOTH_SCAN",
                 "android.permission.ACCESS_FINE_LOCATION"
             ],
-            "versionCode": 5
+            "versionCode": 6
         },
         "web": {
             "favicon": "./assets/favicon.png"

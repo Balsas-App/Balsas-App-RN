@@ -114,3 +114,15 @@ export const getBoardings = async (
         return error;
     }
 };
+
+export const sendBoardingReport = async (
+    boarding_id: number
+): Promise<boolean> => {
+    try {
+        const response = await api.get(`/boardings/${boarding_id}/send-report`);
+        return response.data.success;
+    } catch (error: any) {
+        console.error("error getting boardings", JSON.stringify(error));
+        return false;
+    }
+};
